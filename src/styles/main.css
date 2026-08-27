@@ -1586,15 +1586,22 @@ footer .social_icons li a:hover {
 /* ---- Scroll Reveal (IntersectionObserver) ---- */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(25px);
   transition:
-    opacity var(--duration-slow) var(--ease-smooth),
-    transform var(--duration-slow) var(--ease-smooth);
+    opacity 0.6s var(--ease-smooth),
+    transform 0.6s var(--ease-smooth);
   will-change: opacity, transform;
 }
 .reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Ensure sections with reveal children still show their background */
+.services.reveal,
+.offer-services.reveal,
+.why-choose.reveal {
+  background: #f9f9f9;
 }
 
 /* ---- Banner Smooth Crossfade ---- */
