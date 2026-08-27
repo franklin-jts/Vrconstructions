@@ -73,12 +73,11 @@ const Services: React.FC = () => {
             <div style={{ width: '25%', padding: '0 15px' }}>
               <div role="tabpanel">
                 <ul className="nav nav-tabs" role="tablist">
-                  {services.map((s, idx) => (
+                  {services.map((s) => (
                     <li
                       key={s.id}
                       role="presentation"
-                      className={`reveal ${activeTab === s.id ? 'active' : ''}`}
-                      style={{ transitionDelay: `${idx * 0.05}s` }}
+                      className={activeTab === s.id ? 'active' : ''}
                     >
                       <a
                         role="tab"
@@ -100,7 +99,7 @@ const Services: React.FC = () => {
                   <div
                     key={s.id}
                     role="tabpanel"
-                    className={`tab-pane ${activeTab === s.id ? 'active' : ''}`}
+                    className={`tab-pane${activeTab === s.id ? ' active' : ''}`}
                   >
                     <div className="tab-pane-inner">
                       <h4>
