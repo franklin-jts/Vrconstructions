@@ -29,6 +29,13 @@ const galleryItems = [
   { img: 'gallery-img-3.jpg', category: 'remod', title: 'Warehouse Project' },
 ];
 
+const counters = [
+  { icon: 'fa-trophy', count: 250, suffix: '+', label: 'Projects Completed' },
+  { icon: 'fa-users', count: 180, suffix: '+', label: 'Happy Clients' },
+  { icon: 'fa-calendar-check-o', count: 15, suffix: '+', label: 'Years Experience' },
+  { icon: 'fa-handshake-o', count: 50, suffix: '+', label: 'Expert Workers' },
+];
+
 const serviceOptions = services.map((s) => s.title);
 
 const Home: React.FC = () => {
@@ -151,7 +158,7 @@ const Home: React.FC = () => {
                                     <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleFormChange} />
                                   </li>
                                   <li style={{ width: '100%', padding: '0 7.5px' }}>
-                                    <select name="service" value={formData.service} onChange={handleFormChange} required style={{ width: '100%', padding: '10px 15px', background: 'transparent', border: '1px solid #555', color: '#fff', fontFamily: "'Lato', sans-serif", fontSize: '13px', borderRadius: '3px', appearance: 'none' }}>
+                                    <select name="service" value={formData.service} onChange={handleFormChange} required style={{ width: '100%', padding: '10px 15px', background: 'transparent', border: '1px solid #555', color: '#fff', fontFamily: "'Lato', sans-serif", fontSize: '13px', borderRadius: '3px', appearance: 'none' as const }}>
                                       <option value="" disabled style={{ color: '#333' }}>Select a Service *</option>
                                       {serviceOptions.map((s) => (
                                         <option key={s} value={s} style={{ color: '#333' }}>{s}</option>
@@ -211,6 +218,24 @@ const Home: React.FC = () => {
         </div>
       </div>
 
+      {/* ======= CINEMATIC COUNTERS ======= */}
+      <section className="cinematic-counters">
+        <div className="counters-parallax-bg" data-parallax="0.15"></div>
+        <div className="container">
+          <div className="counters-grid">
+            {counters.map((c, idx) => (
+              <div key={idx} className="counter-item reveal" data-reveal-group="counters" style={{ transitionDelay: `${idx * 0.12}s` }}>
+                <div className="counter-icon">
+                  <i className={`fa ${c.icon}`}></i>
+                </div>
+                <div className="counter-number" data-count={c.count} data-suffix={c.suffix}>0</div>
+                <div className="counter-label">{c.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ======= SERVICES - ANIMATED CARDS ======= */}
       <section className="services">
         <div className="container">
@@ -223,6 +248,7 @@ const Home: React.FC = () => {
               <div
                 key={service.id}
                 className="service-card reveal"
+                data-reveal-group="services"
                 style={{ transitionDelay: `${idx * 0.1}s` }}
               >
                 <div className="service-icon">
@@ -243,15 +269,21 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ======= WELCOME ======= */}
-      <section className="welcome">
-        <div className="container">
-          <div className="tittle reveal">
-            <h2>Welcome to VR Construction</h2>
-            <p>Sed quis viverra enim. Vivamus aliquet rutrum dui a varius. Mauris ornare tortor in eleifend blandit ullam ut ligula et neque.</p>
+      {/* ======= WELCOME — CINEMATIC PARALLAX ======= */}
+      <section className="welcome-cinematic">
+        <div className="cinematic-bg" data-parallax="0.2">
+          <img src="/images/welcome-img.jpg" alt="" />
+          <div className="cinematic-overlay"></div>
+        </div>
+        <div className="container cinematic-welcome-content">
+          <div className="welcome-text-block reveal">
+            <span className="welcome-tag">Welcome to VR Construction</span>
+            <h2>Building Dreams Into Reality</h2>
+            <div className="welcome-divider"></div>
+            <p>We bring over 15 years of expertise to every project. From residential homes to commercial complexes, our team delivers quality craftsmanship with precision and care.</p>
+            <Link to="/about" className="btn">Discover More</Link>
           </div>
         </div>
-        <img className="img-responsive reveal" src="/images/welcome-img.jpg" alt="Welcome" style={{ width: '100%' }} />
       </section>
 
       {/* ======= OFFER SERVICES (TABS) ======= */}
@@ -322,6 +354,52 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* ======= WHY CHOOSE US ======= */}
+      <section className="why-choose-cinematic">
+        <div className="container">
+          <div className="tittle reveal">
+            <h2>Why Choose Us</h2>
+            <p>What makes VR Construction stand out from the rest</p>
+          </div>
+          <div className="row why-grid">
+            {[
+              { icon: 'fa-shield', title: 'Trusted & Reliable', desc: 'Licensed and insured with a proven track record of successful projects across the region.' },
+              { icon: 'fa-clock-o', title: 'On-Time Delivery', desc: 'We respect your deadlines. Our project management ensures every phase is completed on schedule.' },
+              { icon: 'fa-certificate', title: 'Quality Assured', desc: 'Premium materials and skilled craftsmanship backed by our quality guarantee on all work.' },
+              { icon: 'fa-headphones', title: '24/7 Support', desc: 'Round-the-clock customer service. Call us anytime — we are always ready to help.' },
+            ].map((item, idx) => (
+              <div key={idx} style={{ width: '25%', padding: '0 15px' }}>
+                <div className="sec-in reveal" data-reveal-group="why" style={{ transitionDelay: `${idx * 0.12}s` }}>
+                  <i className={`fa ${item.icon}`}></i>
+                  <hr />
+                  <h6>{item.title}</h6>
+                  <p>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ======= PARALLAX CTA ======= */}
+      <section className="parallax-cta">
+        <div className="parallax-cta-bg" data-parallax="0.25"></div>
+        <div className="parallax-cta-overlay"></div>
+        <div className="container parallax-cta-content">
+          <div className="reveal">
+            <h3>Need a Free Consultation?</h3>
+            <h1>Let's Build Something Amazing Together</h1>
+            <p>Call us now or fill out the form — we'll get back to you within 24 hours.</p>
+            <div className="parallax-cta-buttons">
+              <Link to="/contact" className="btn">Get Free Quote</Link>
+              <a href="tel:+61123456789" className="btn btn-cta-phone">
+                <i className="fa fa-phone"></i> +61 (123) 456 789
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ======= GALLERY ======= */}
       <section className="gallery">
         <div className="container">
@@ -331,7 +409,7 @@ const Home: React.FC = () => {
         </div>
         <div className="gallery-slide">
           {galleryItems.map((item, idx) => (
-            <div key={idx} className="gal-item reveal" style={{ transitionDelay: `${idx * 0.08}s` }}>
+            <div key={idx} className="gal-item reveal" data-reveal-group="gallery" style={{ transitionDelay: `${idx * 0.08}s` }}>
               <img src={`/images/${item.img}`} alt={item.title} />
               <div className="gallery-over">
                 <Link to="/gallery" className="link-up link">
@@ -359,7 +437,7 @@ const Home: React.FC = () => {
               { name: 'Sarah Johnson', role: 'Business Owner', avatar: 'avatar-2.jpg', text: 'Outstanding commercial construction work! The team was professional, on time, and within budget. Highly recommended for any construction project.' },
               { name: 'Michael Brown', role: 'Property Developer', avatar: 'avatar-3.jpg', text: 'Working with VR Construction has been a pleasure. Their expertise in civil engineering and project management is unmatched in the industry.' },
             ].map((client, idx) => (
-              <li key={idx} className="reveal" style={{ flex: 1, transitionDelay: `${idx * 0.15}s` }}>
+              <li key={idx} className="reveal" data-reveal-group="clients" style={{ flex: 1, transitionDelay: `${idx * 0.15}s` }}>
                 <div className="avatar">
                   <img src={`/images/${client.avatar}`} alt={client.name} />
                 </div>
@@ -385,7 +463,7 @@ const Home: React.FC = () => {
               { img: 'b-img-2.jpg', title: 'Quality Construction Materials' },
               { img: 'b-img-3.jpg', title: 'Modern Building Techniques' },
             ].map((post, idx) => (
-              <li key={idx} className="reveal" style={{ width: '33.333%', padding: '0 15px', transitionDelay: `${idx * 0.15}s` }}>
+              <li key={idx} className="reveal" data-reveal-group="blog" style={{ width: '33.333%', padding: '0 15px', transitionDelay: `${idx * 0.15}s` }}>
                 <div className="b-inner">
                   <img className="img-responsive" src={`/images/${post.img}`} alt={post.title} />
                   <div className="b-details">
@@ -407,7 +485,7 @@ const Home: React.FC = () => {
           </div>
           <div className="parthner-slide">
             {[1, 2, 3, 4, 5].map((num) => (
-              <div key={num} className="part reveal" style={{ transitionDelay: `${num * 0.1}s` }}>
+              <div key={num} className="part reveal" data-reveal-group="partners" style={{ transitionDelay: `${num * 0.1}s` }}>
                 <a href="#"><img src={`/images/parthner-img-${num}.png`} alt="Partner" /></a>
               </div>
             ))}
