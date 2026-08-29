@@ -614,11 +614,13 @@ footer .social_icons li a:hover { background: var(--c-accent); color: var(--c-bg
 @media (max-width: 576px) { footer .col-sm-3 { width: 100%; } }
 
 /* Sub Banner */
-.sub-banner { background: var(--c-bg-1); padding: 60px 0 40px; text-align: center; border-bottom: 1px solid var(--c-border); }
-.sub-banner h1 { font-size: 36px; color: var(--c-white); text-transform: uppercase; margin-bottom: 10px; }
+.sub-banner { background: var(--c-bg-1); padding: 80px 0 50px; text-align: center; border-bottom: 1px solid var(--c-border); position: relative; }
+.sub-banner h1 { font-size: 40px; color: var(--c-white); text-transform: uppercase; margin-bottom: 12px; font-weight: 700; }
+.sub-banner p { color: var(--c-text-dim); font-size: 14px; }
 .breadcrumb { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
 .breadcrumb li { color: var(--c-text-muted); font-size: 13px; }
 .breadcrumb li a { color: var(--c-accent); }
+.breadcrumb li a:hover { text-decoration: underline; }
 
 /* Service Part */
 .service-part { padding: 80px 0; }

@@ -46,22 +46,20 @@ const Contact: React.FC = () => {
       <section className="section" style={{ background: 'var(--c-bg)' }}>
         <div className="container">
           {/* Contact Cards */}
-          <div className="row" style={{ gap: '20px', marginBottom: '40px' }}>
+          <div style={{ display: 'flex', gap: '20px', marginBottom: '40px' }}>
             {[
               { icon: 'fa-phone', title: 'Call Us 24/7', detail: '+61 (123) 456 789', sub: 'Emergency Service Available' },
               { icon: 'fa-map-marker', title: 'Contact Address', detail: '44 New Design Street, Melbourne 005', sub: 'info@vrconstruction.com' },
               { icon: 'fa-gift', title: 'Special Offers', detail: '$25 OFF Consultation', sub: 'Limited time offer', btn: true },
             ].map((item, idx) => (
-              <div key={idx} style={{ flex: 1 }}>
-                <div className="con-det" style={{ margin: 0 }}>
-                  <div style={{ padding: '30px', background: 'var(--c-surface)', border: '1px solid var(--c-border)', borderRadius: '8px', textAlign: 'center' }}>
-                    <i className={`fa ${item.icon}`} style={{ fontSize: '28px', color: 'var(--c-accent)', marginBottom: '15px', display: 'block' }}></i>
-                    <h6>{item.title}</h6>
-                    <hr style={{ border: 'none', borderTop: '2px solid var(--c-accent)', width: '30px', margin: '10px auto' }} />
-                    <h4 style={{ fontFamily: 'var(--f-heading)', color: 'var(--c-accent)', fontSize: '20px', marginBottom: '8px' }}>{item.detail}</h4>
-                    <p>{item.sub}</p>
-                    {item.btn && <Link to="/services" className="btn btn-primary" style={{ marginTop: '15px', border: 'none' }}>View Specials</Link>}
-                  </div>
+              <div key={idx} style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ padding: '30px', background: 'var(--c-surface)', border: '1px solid var(--c-border)', borderRadius: '8px', textAlign: 'center', height: '100%' }}>
+                  <i className={`fa ${item.icon}`} style={{ fontSize: '28px', color: 'var(--c-accent)', marginBottom: '15px', display: 'block' }}></i>
+                  <h6>{item.title}</h6>
+                  <hr style={{ border: 'none', borderTop: '2px solid var(--c-accent)', width: '30px', margin: '10px auto' }} />
+                  <h4 style={{ fontFamily: 'var(--f-heading)', color: 'var(--c-accent)', fontSize: '20px', marginBottom: '8px' }}>{item.detail}</h4>
+                  <p>{item.sub}</p>
+                  {item.btn && <Link to="/services" className="btn btn-primary" style={{ marginTop: '15px', border: 'none' }}>View Specials</Link>}
                 </div>
               </div>
             ))}
