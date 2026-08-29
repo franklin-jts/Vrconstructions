@@ -1,29 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const About: React.FC = () => {
-  const [openAccordion, setOpenAccordion] = useState('collapseOne');
-  const toggleAccordion = (id: string) => setOpenAccordion(openAccordion === id ? '' : id);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const pageRef = useRef<HTMLDivElement>(null);
 
-  const teamMembers = [
-    { name: 'Nissan Waser', role: 'Construction Engineer', img: 'team-1.jpg' },
-    { name: 'Benjamin Thomas', role: 'Project Manager', img: 'team-2.jpg' },
-    { name: 'Isabella', role: 'Interior Designer', img: 'team-3.jpg' },
-    { name: 'Alexander', role: 'Site Supervisor', img: 'team-4.jpg' },
+  useEffect(() => {
+    if (!pageRef.current) return;
+    const reveals = pageRef.current.querySelectorAll('.gsap-reveal');
+    reveals.forEach((el) => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+        }
+      );
+    });
+    const staggerGroups = pageRef.current.querySelectorAll('.gsap-stagger');
+    staggerGroups.forEach((group) => {
+      gsap.fromTo(group.children,
+        { opacity: 0, y: 30, scale: 0.96 },
+        {
+          opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'power2.out',
+          scrollTrigger: { trigger: group, start: 'top 82%', toggleActions: 'play none none none' },
+        }
+      );
+    });
+    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
+  }, []);
+
+  const stats = [
+    { icon: 'fa-building', num: '250+', label: 'Projects Completed' },
+    { icon: 'fa-calendar', num: '15+', label: 'Years Experience' },
+    { icon: 'fa-users', num: '180+', label: 'Happy Clients' },
+    { icon: 'fa-map-marker', num: '12', label: 'Cities Covered' },
   ];
 
-  const accordionItems = [
-    { id: 'collapseOne', icon: 'fa-gear', title: 'Awards & Recognition', text: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.' },
-    { id: 'collapseTwo', icon: 'fa-bell', title: 'Our Company History', text: 'Founded in 2000, VR Construction has grown from a small construction firm to one of the most trusted names in the industry. Our journey has been marked by continuous innovation and commitment to excellence.' },
-    { id: 'collapseThree', icon: 'fa-gear', title: 'Future Plans', text: 'We are committed to expanding our services into sustainable building practices, smart home technology integration, and green construction solutions.' },
+  const features = [
+    { icon: 'fa-shield', title: 'Licensed & Insured', desc: 'Fully certified team with comprehensive insurance coverage for your peace of mind.' },
+    { icon: 'fa-clock-o', title: '24/7 Availability', desc: 'Round the clock emergency service for urgent construction and repair needs.' },
+    { icon: 'fa-usd', title: 'Transparent Pricing', desc: 'No hidden fees. Get detailed estimates with competitive rates upfront.' },
+    { icon: 'fa-star', title: '5-Star Rated', desc: 'Consistently rated 5 stars by our clients for quality and professionalism.' },
+  ];
+
+  const teamMembers = [
+    { name: 'Rajesh Kumar', role: 'Founder & CEO', img: 'team-1.jpg', desc: '20+ years in construction leadership.' },
+    { name: 'Priya Sharma', role: 'Project Manager', img: 'team-2.jpg', desc: 'Expert in large-scale project coordination.' },
+    { name: 'Amit Patel', role: 'Lead Architect', img: 'team-3.jpg', desc: 'Award-winning sustainable design specialist.' },
+    { name: 'Deepak Singh', role: 'Site Supervisor', img: 'team-4.jpg', desc: 'Hands-on quality control at every stage.' },
+  ];
+
+  const faqItems = [
+    { q: 'How long does a typical construction project take?', a: 'Timeline varies by scope. Residential projects take 3-6 months, commercial 6-12 months. We provide a detailed schedule during planning.' },
+    { q: 'Do you handle permits and approvals?', a: 'Yes. We manage all permits, inspections, and council approvals as part of our full-service approach.' },
+    { q: 'What warranty do you provide?', a: 'We offer a 10-year structural warranty and 2-year workmanship warranty on all projects.' },
+    { q: 'Can I customize my project mid-construction?', a: 'Absolutely. We offer flexible change order processes with transparent cost and timeline adjustments.' },
   ];
 
   return (
-    <>
+    <div ref={pageRef}>
+      {/* Sub Banner */}
       <div className="sub-banner">
         <div className="container">
           <h1>About Us</h1>
-          <p>We have 25 years experience in construction</p>
+          <p>Building Trust Since 2010 — 25 Years of Construction Excellence</p>
         </div>
         <ol className="breadcrumb">
           <li><Link to="/">Home</Link></li>
@@ -31,131 +76,162 @@ const About: React.FC = () => {
         </ol>
       </div>
 
-      <section className="section" style={{ background: 'var(--c-bg)' }}>
+      {/* Story Section */}
+      <section className="about-story-section">
         <div className="container">
-          <div className="row" style={{ alignItems: 'center' }}>
-            <div style={{ width: '50%', padding: '0 15px' }}>
-              <div className="section-header" style={{ textAlign: 'left' }}>
-                <span className="section-tag">About Us</span>
-                <h2>We Build All Your Construction Dreams</h2>
-                <div className="section-line" style={{ margin: '15px 0' }} />
-              </div>
-              <p style={{ marginBottom: '20px', lineHeight: 1.8 }}>
-                Sed quis viverra enim. Vivamus aliquet rutrum dui a varius. Mauris ornare tortor
-                in eleifend blandit ullam ut ligula et neque.
+          <div className="about-story-grid">
+            <div className="about-story-content gsap-reveal">
+              <span className="section-tag">Who We Are</span>
+              <h2>Building the Future with Precision & Passion</h2>
+              <div className="section-line" style={{ margin: '15px 0' }} />
+              <p>
+                Founded in 2010, VR Construction has grown from a small family firm to one of the most
+                trusted names in the construction industry. We specialize in residential, commercial,
+                and industrial projects — delivering excellence from foundation to finish.
               </p>
-              <Link to="/about" className="btn btn-primary">Learn More</Link>
-            </div>
-            <div style={{ width: '50%', padding: '0 15px' }}>
-              <div className="row" style={{ gap: '15px' }}>
-                {[
-                  { icon: 'fa-clock-o', title: '24/7 Availability', desc: 'Round the clock service for all your construction needs.' },
-                  { icon: 'fa-users', title: 'Expert Workers', desc: 'Skilled professionals with years of experience.' },
-                  { icon: 'fa-usd', title: 'Low Pricing', desc: 'Competitive rates without compromising quality.' },
-                  { icon: 'fa-thumbs-o-up', title: 'Free Estimation', desc: 'Get a free quote for your project today.' },
-                ].map((item, idx) => (
-                  <div key={idx} style={{ width: 'calc(50% - 8px)', padding: '0' }}>
-                    <div className="service-card-dark" style={{ height: '100%' }}>
-                      <div className="service-card-icon"><i className={`fa ${item.icon}`}></i></div>
-                      <h5>{item.title}</h5>
-                      <p>{item.desc}</p>
+              <p>
+                Our team of 50+ skilled professionals combines traditional craftsmanship with modern
+                technology. Every project we undertake reflects our commitment to quality, safety,
+                and client satisfaction.
+              </p>
+              <div className="about-highlights">
+                {features.map((f, i) => (
+                  <div key={i} className="about-highlight-item">
+                    <i className={`fa ${f.icon}`}></i>
+                    <div>
+                      <h6>{f.title}</h6>
+                      <p>{f.desc}</p>
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+            <div className="about-story-images gsap-reveal">
+              <div className="about-img-main">
+                <img src="/images/about-img.jpg" alt="VR Construction Team" />
+                <div className="about-experience-badge">
+                  <span className="badge-num">15+</span>
+                  <span className="badge-text">Years of Excellence</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: 'var(--c-bg-1)' }}>
+      {/* Stats */}
+      <section className="about-stats-section">
         <div className="container">
-          <div className="row" style={{ alignItems: 'center' }}>
-            <div style={{ width: '50%', padding: '0 15px' }}>
-              <div className="section-header" style={{ textAlign: 'left' }}>
-                <span className="section-tag">Who We Are</span>
-                <h2>Our Story</h2>
-                <div className="section-line" style={{ margin: '15px 0' }} />
+          <div className="about-stats-grid gsap-stagger">
+            {stats.map((s, i) => (
+              <div key={i} className="about-stat-card">
+                <div className="about-stat-icon"><i className={`fa ${s.icon}`}></i></div>
+                <h3>{s.num}</h3>
+                <p>{s.label}</p>
               </div>
-              <div className="panel-group">
-                {accordionItems.map((item) => (
-                  <div key={item.id} className="panel">
-                    <div className="panel-heading">
-                      <h4 className="panel-title">
-                        <a onClick={() => toggleAccordion(item.id)} style={{ cursor: 'pointer' }} aria-expanded={openAccordion === item.id}>
-                          <span className="icon-accor"><i className={`fa ${item.icon}`}></i></span>
-                          {item.title}
-                        </a>
-                      </h4>
-                    </div>
-                    <div className={`panel-collapse ${openAccordion === item.id ? 'show' : ''}`}>
-                      <div className="panel-body"><p>{item.text}</p></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mission & Vision */}
+      <section className="about-mission-section">
+        <div className="container">
+          <div className="about-mission-grid">
+            <div className="about-mission-card gsap-reveal">
+              <div className="about-mission-icon"><i className="fa fa-bullseye"></i></div>
+              <h3>Our Mission</h3>
+              <p>
+                To deliver exceptional construction services that exceed client expectations through
+                innovation, quality craftsmanship, and unwavering commitment to safety and sustainability.
+              </p>
             </div>
-            <div style={{ width: '50%', padding: '0 15px' }}>
-              <img src="/images/about-img.jpg" alt="About VR Construction" style={{ width: '100%', borderRadius: '8px' }} />
+            <div className="about-mission-card gsap-reveal">
+              <div className="about-mission-icon"><i className="fa fa-eye"></i></div>
+              <h3>Our Vision</h3>
+              <p>
+                To be the most trusted construction partner in the region, known for transforming
+                visions into reality while setting new standards for excellence in the industry.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: 'var(--c-bg)' }}>
+      {/* Team */}
+      <section className="about-team-section">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header gsap-reveal">
             <span className="section-tag">Our Team</span>
-            <h2>Team Members</h2>
+            <h2>Meet the Experts</h2>
             <div className="section-line" />
           </div>
-          <div className="row">
-            {teamMembers.map((member, idx) => (
-              <div key={idx} style={{ width: '25%', padding: '0 10px' }}>
-                <div className="team">
-                  <img src={`/images/${member.img}`} alt={member.name} />
-                  <div className="team-over"></div>
-                  <div className="team-detail">
-                    <h6>{member.name}</h6>
-                    <p>{member.role}</p>
-                    <ul className="social_icons">
+          <div className="about-team-grid gsap-stagger">
+            {teamMembers.map((m, i) => (
+              <div key={i} className="about-team-card">
+                <div className="about-team-img">
+                  <img src={`/images/${m.img}`} alt={m.name} />
+                  <div className="about-team-overlay">
+                    <ul className="about-team-social">
                       <li><a href="#"><i className="fa fa-facebook"></i></a></li>
                       <li><a href="#"><i className="fa fa-twitter"></i></a></li>
                       <li><a href="#"><i className="fa fa-linkedin"></i></a></li>
                     </ul>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section" style={{ background: 'var(--c-bg-1)' }}>
-        <div className="container">
-          <div className="section-header">
-            <span className="section-tag">Testimonials</span>
-            <h2>Client Feedback</h2>
-            <div className="section-line" />
-          </div>
-          <div className="row" style={{ gap: '20px' }}>
-            {[
-              { name: 'John Smith', role: 'Home Owner', avatar: 'avatar-1.jpg', text: 'VR Construction delivered exceptional quality on our home renovation.' },
-              { name: 'Sarah Johnson', role: 'Business Owner', avatar: 'avatar-2.jpg', text: 'Outstanding commercial work! Professional team, on time, within budget.' },
-              { name: 'Michael Brown', role: 'Property Developer', avatar: 'avatar-3.jpg', text: 'Unmatched expertise in civil engineering and project management.' },
-            ].map((client, idx) => (
-              <div key={idx} className="testimonial-card active" style={{ position: 'relative', opacity: 1, transform: 'none', pointerEvents: 'auto', flex: 1 }}>
-                <p>{client.text}</p>
-                <div className="testimonial-author">
-                  <img src={`/images/${client.avatar}`} alt={client.name} />
-                  <div><h6>{client.name}</h6><span>{client.role}</span></div>
+                <div className="about-team-info">
+                  <h5>{m.name}</h5>
+                  <span>{m.role}</span>
+                  <p>{m.desc}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
-    </>
+
+      {/* FAQ */}
+      <section className="about-faq-section">
+        <div className="container">
+          <div className="about-faq-grid">
+            <div className="about-faq-content gsap-reveal">
+              <span className="section-tag">FAQ</span>
+              <h2>Frequently Asked Questions</h2>
+              <div className="section-line" style={{ margin: '15px 0' }} />
+              <p>Have questions? We have answers. If you don't find what you're looking for, feel free to contact us directly.</p>
+              <Link to="/contact" className="btn btn-primary" style={{ marginTop: '20px' }}>Contact Us</Link>
+            </div>
+            <div className="about-faq-list gsap-reveal">
+              {faqItems.map((item, i) => (
+                <div key={i} className={`about-faq-item ${openFaq === i ? 'active' : ''}`}>
+                  <button className="about-faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                    <span>{item.q}</span>
+                    <i className={`fa fa-chevron-${openFaq === i ? 'up' : 'down'}`}></i>
+                  </button>
+                  <div className="about-faq-answer">
+                    <p>{item.a}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="about-cta-section">
+        <div className="container">
+          <div className="about-cta-content gsap-reveal">
+            <h2>Ready to Start Your Project?</h2>
+            <p>Let's discuss your vision and bring it to life with our expert team.</p>
+            <div className="about-cta-buttons">
+              <Link to="/contact" className="btn btn-primary">Get Free Quote</Link>
+              <a href="tel:+61123456789" className="btn btn-outline"><i className="fa fa-phone"></i> +61 (123) 456 789</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 
