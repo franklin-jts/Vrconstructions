@@ -1,67 +1,170 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
-import { useScrollReveal } from '../hooks/useScrollReveal';
-import { useScrollProgress } from '../hooks/useScrollProgress';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ConstructionScene from '../components/ConstructionScene';
 import { EMAILJS_CONFIG } from '../config/email';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const services = [
-  { id: 'construction', title: 'Construction', icon: 'fa-building', items: ['Residential Construction', 'Commercial Building', 'Warehouse Construction'] },
-  { id: 'renovation', title: 'Renovation', icon: 'fa-refresh', items: ['Home All Types of Renovation Work'] },
-  { id: 'electrical', title: 'Electrical', icon: 'fa-bolt', items: ['Complete Electrical Wiring', 'Electrical Panel Installation', 'Lighting Solutions', 'Safety Inspections'] },
-  { id: 'plumbing', title: 'Plumbing', icon: 'fa-tint', items: ['Pipe Installation & Repair', 'Bathroom Plumbing', 'Kitchen Plumbing', 'Water Line Services'] },
-  { id: 'tiles', title: 'Tiles Laying', icon: 'fa-th-large', items: ['Marble Tiles', 'Granite Tiles', 'Ceramic Tiles', 'Wall & Floor Tiling'] },
-  { id: 'carpentry', title: 'Carpentry Works', icon: 'fa-tree', items: ['Custom Woodwork', 'Door & Window Installation', 'Framing & Structural Work', 'Wood Finishing'] },
-  { id: 'fabrication', title: 'Fabrication', icon: 'fa-wrench', items: ['M.S Fabrication', 'S.S Fabrication', 'Aluminum Fabrication', 'Custom Metal Work'] },
-  { id: 'falseceiling', title: 'False Ceiling', icon: 'fa-server', items: ['Gypsum Board Ceiling', 'POP Ceiling', 'Grid Ceiling', 'Decorative Ceiling'] },
-  { id: 'painting', title: 'Painting', icon: 'fa-paint-brush', items: ['Interior Painting', 'Exterior Painting', 'Texture Painting', 'Waterproof Coating'] },
-  { id: 'interior', title: 'Interior Work', icon: 'fa-home', items: ['Kitchen Interiors', 'Wardrobes & Lofts', 'TV Cabinet', 'Pooja Cabinet', 'Wall Paneling'] },
-  { id: 'waterproofing', title: 'Waterproofing', icon: 'fa-shield', items: ['Roof Waterproofing', 'Basement Waterproofing', 'Bathroom Waterproofing', 'Terrace Waterproofing'] },
+  { id: 'construction', title: 'Construction', icon: 'fa-building', desc: 'Residential, commercial, and warehouse builds from foundation to finish.' },
+  { id: 'renovation', title: 'Renovation', icon: 'fa-refresh', desc: 'Complete home renovation and remodeling services.' },
+  { id: 'electrical', title: 'Electrical', icon: 'fa-bolt', desc: 'Wiring, panel installation, lighting, and safety inspections.' },
+  { id: 'plumbing', title: 'Plumbing', icon: 'fa-tint', desc: 'Pipe installation, bathroom, kitchen, and water line services.' },
+  { id: 'tiles', title: 'Tiles Laying', icon: 'fa-th-large', desc: 'Marble, granite, ceramic — wall and floor tiling.' },
+  { id: 'carpentry', title: 'Carpentry', icon: 'fa-tree', desc: 'Custom woodwork, doors, windows, framing, and finishing.' },
+  { id: 'fabrication', title: 'Fabrication', icon: 'fa-wrench', desc: 'M.S, S.S, aluminum, and custom metal fabrication.' },
+  { id: 'falseceiling', title: 'False Ceiling', icon: 'fa-server', desc: 'Gypsum, POP, grid, and decorative ceiling systems.' },
+  { id: 'painting', title: 'Painting', icon: 'fa-paint-brush', desc: 'Interior, exterior, texture, and waterproof coatings.' },
+  { id: 'interior', title: 'Interior Work', icon: 'fa-home', desc: 'Kitchens, wardrobes, TV cabinets, wall paneling.' },
+  { id: 'waterproofing', title: 'Waterproofing', icon: 'fa-shield', desc: 'Roof, basement, bathroom, and terrace waterproofing.' },
 ];
 
 const galleryItems = [
-  { img: 'gallery-img-1.jpg', category: 'repair', title: 'Modern Villa Construction' },
-  { img: 'gallery-img-2.jpg', category: 'installation', title: 'Commercial Complex' },
-  { img: 'gallery-img-3.jpg', category: 'remod', title: 'Bridge Infrastructure' },
-  { img: 'gallery-img-4.jpg', category: 'inspec', title: 'Industrial Facility' },
-  { img: 'gallery-img-5.jpg', category: 'other', title: 'Interior Renovation' },
-  { img: 'gallery-img-2.jpg', category: 'repair', title: 'Road Construction' },
-  { img: 'gallery-img-1.jpg', category: 'installation', title: 'High Rise Building' },
-  { img: 'gallery-img-3.jpg', category: 'remod', title: 'Warehouse Project' },
+  { img: 'gallery-img-1.jpg', category: 'residential', title: 'Modern Villa Construction' },
+  { img: 'gallery-img-2.jpg', category: 'commercial', title: 'Commercial Complex' },
+  { img: 'gallery-img-3.jpg', category: 'infrastructure', title: 'Bridge Infrastructure' },
+  { img: 'gallery-img-4.jpg', category: 'industrial', title: 'Industrial Facility' },
+  { img: 'gallery-img-5.jpg', category: 'renovation', title: 'Interior Renovation' },
+  { img: 'gallery-img-2.jpg', category: 'infrastructure', title: 'Road Construction' },
 ];
 
 const counters = [
-  { icon: 'fa-trophy', count: 250, suffix: '+', label: 'Projects Completed' },
+  { icon: 'fa-building-o', count: 250, suffix: '+', label: 'Projects Completed' },
+  { icon: 'fa-calendar', count: 15, suffix: '+', label: 'Years Experience' },
   { icon: 'fa-users', count: 180, suffix: '+', label: 'Happy Clients' },
-  { icon: 'fa-calendar-check-o', count: 15, suffix: '+', label: 'Years Experience' },
-  { icon: 'fa-handshake-o', count: 50, suffix: '+', label: 'Expert Workers' },
+  { icon: 'fa-map-marker', count: 12, suffix: '', label: 'Cities Covered' },
 ];
 
 const processSteps = [
-  { num: '01', icon: 'fa-pencil-square-o', title: 'Planning & Design', desc: 'Our architects craft detailed blueprints and 3D models, mapping every beam, pipe, and wire before ground is broken.' },
-  { num: '02', icon: 'fa-road', title: 'Foundation & Structure', desc: 'Steel reinforcement, concrete pouring, and structural framing — the backbone of your building rises from the earth.' },
-  { num: '03', icon: 'fa-cogs', title: 'MEP & Systems', desc: 'Electrical wiring, plumbing networks, HVAC ducting, and fire safety systems are installed with precision.' },
-  { num: '04', icon: 'fa-paint-brush', title: 'Interior & Finishing', desc: 'Flooring, tiling, painting, false ceilings, cabinetry, and final touches transform structure into home.' },
+  { num: '01', icon: 'fa-pencil-square-o', title: 'Planning', desc: 'Site survey, blueprints, 3D models, permits.' },
+  { num: '02', icon: 'fa-pencil', title: 'Design', desc: 'Architectural design, material selection, budgeting.' },
+  { num: '03', icon: 'fa-building', title: 'Build', desc: 'Foundation, structure, MEP, and finishing.' },
+  { num: '04', icon: 'fa-check-circle', title: 'Handover', desc: 'Quality inspection, documentation, keys delivered.' },
+];
+
+const testimonials = [
+  { name: 'John Smith', role: 'Home Owner', avatar: 'avatar-1.jpg', text: 'VR Construction delivered exceptional quality on our home renovation. Their attention to detail exceeded our expectations.' },
+  { name: 'Sarah Johnson', role: 'Business Owner', avatar: 'avatar-2.jpg', text: 'Outstanding commercial work! Professional team, on time, within budget. Highly recommended.' },
+  { name: 'Michael Brown', role: 'Property Developer', avatar: 'avatar-3.jpg', text: 'Unmatched expertise in civil engineering and project management. A true pleasure to work with.' },
 ];
 
 const serviceOptions = services.map((s) => s.title);
 
 const Home: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [activeTab, setActiveTab] = useState(services[0].id);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [heroProgress, setHeroProgress] = useState(0);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState('');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    service: '',
-    description: '',
-  });
-  const sectionRef = useScrollReveal('.reveal');
-  const scrollProgress = useScrollProgress();
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: '', description: '' });
+  const [galleryFilter, setGalleryFilter] = useState('all');
+
+  const heroRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
+
+  // GSAP ScrollTrigger — building assembly linked to scroll
+  useEffect(() => {
+    if (!pageRef.current) return;
+
+    // Hero scroll progress → building floors
+    ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 0.5,
+      onUpdate: (self) => {
+        setHeroProgress(self.progress);
+      },
+    });
+
+    // Section reveals
+    const reveals = pageRef.current.querySelectorAll('.gsap-reveal');
+    reveals.forEach((el) => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            end: 'top 50%',
+            toggleActions: 'play none none none',
+          },
+        }
+      );
+    });
+
+    // Staggered card reveals
+    const cardGroups = pageRef.current.querySelectorAll('.gsap-stagger');
+    cardGroups.forEach((group) => {
+      const cards = group.children;
+      gsap.fromTo(cards,
+        { opacity: 0, y: 40, scale: 0.95 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: group,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          },
+        }
+      );
+    });
+
+    // Parallax sections
+    const parallaxEls = pageRef.current.querySelectorAll('[data-parallax]');
+    parallaxEls.forEach((el) => {
+      const speed = parseFloat((el as HTMLElement).dataset.parallax || '0.2');
+      gsap.to(el, {
+        y: -100 * speed,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el.parentElement,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      });
+    });
+
+    // Process timeline — truck driving
+    const truck = pageRef.current.querySelector('#process-truck');
+    if (truck) {
+      gsap.to(truck, {
+        x: 300,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.process-timeline',
+          start: 'top 70%',
+          end: 'bottom 30%',
+          scrub: true,
+        },
+      });
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -75,551 +178,354 @@ const Home: React.FC = () => {
       await emailjs.send(
         EMAILJS_CONFIG.serviceId,
         EMAILJS_CONFIG.serviceRequestTemplate,
-        {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          service: formData.service,
-          description: formData.description,
-          date: new Date().toLocaleDateString('en-US', {
-            year: 'numeric', month: 'long', day: 'numeric',
-            hour: '2-digit', minute: '2-digit',
-          }),
-        },
+        { ...formData, date: new Date().toLocaleDateString() },
         { publicKey: EMAILJS_CONFIG.publicKey },
       );
       setFormSuccess(true);
       setFormData({ name: '', email: '', phone: '', service: '', description: '' });
       setTimeout(() => setFormSuccess(false), 5000);
-    } catch (err) {
-      console.error('Email send error:', err);
-      setFormError('Failed to send request. Please try again or call us directly.');
+    } catch {
+      setFormError('Failed to send. Please call us directly.');
     } finally {
       setFormSubmitting(false);
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % 2);
-        setIsTransitioning(false);
-      }, 500);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [currentSlide]);
-
-  const handleSlideChange = (idx: number) => {
-    if (idx === currentSlide) return;
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentSlide(idx);
-      setIsTransitioning(false);
-    }, 500);
-  };
+  const filteredGallery = galleryFilter === 'all'
+    ? galleryItems
+    : galleryItems.filter((g) => g.category === galleryFilter);
 
   return (
-    <div ref={sectionRef}>
-      {/* ======= SCROLL PROGRESS BAR ======= */}
+    <div ref={pageRef}>
+      {/* ===== SCROLL PROGRESS ===== */}
       <div className="scroll-progress-bar">
-        <div className="scroll-progress-fill" style={{ width: `${scrollProgress * 100}%` }}></div>
+        <div className="scroll-progress-fill" style={{ width: `${heroProgress * 100}%` }} />
       </div>
 
-      {/* ======= BLUEPRINT GRID OVERLAY (decorative) ======= */}
-      <div className="blueprint-grid-bg"></div>
-
-      {/* ======= BANNER ======= */}
-      <div id="banner">
-        <div className="flex-banner">
-          <ul className="slides">
-            {[0, 1].map((i) => (
-              <li
-                key={i}
-                className={`banner-slide ${currentSlide === i ? 'active' : ''} ${currentSlide === i && isTransitioning ? 'entering' : ''}`}
-              >
-                <img src={`/images/slide-${i === 0 ? '1' : '2'}.jpg`} alt="VR Construction" />
-                {/* Cinematic vignette */}
-                <div className="banner-vignette"></div>
-                <div className="banner-up">
-                  <div className="container">
-                    <div className="row">
-                      {i === 0 ? (
-                        <>
-                          <div className="col-5">
-                            <div className="bnr-form banner-content" style={{ animationDelay: '0.3s' }}>
-                              <h3>Quick Service Request</h3>
-                              <h6>24 hours service available!</h6>
-
-                              {formSuccess && (
-                                <div className="form-success-msg">
-                                  <i className="fa fa-check-circle"></i>
-                                  Thank you! Your request has been submitted. We'll contact you soon.
-                                </div>
-                              )}
-
-                              {formError && (
-                                <div className="form-error-msg">
-                                  <i className="fa fa-exclamation-circle"></i>
-                                  {formError}
-                                </div>
-                              )}
-
-                              <form role="form" onSubmit={handleFormSubmit}>
-                                <ul className="row">
-                                  <li style={{ width: '50%', padding: '0 7.5px' }}>
-                                    <input type="text" name="name" placeholder="Your Name *" value={formData.name} onChange={handleFormChange} required />
-                                  </li>
-                                  <li style={{ width: '50%', padding: '0 7.5px' }}>
-                                    <input type="email" name="email" placeholder="Email Address *" value={formData.email} onChange={handleFormChange} required />
-                                  </li>
-                                  <li style={{ width: '100%', padding: '0 7.5px' }}>
-                                    <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleFormChange} />
-                                  </li>
-                                  <li style={{ width: '100%', padding: '0 7.5px' }}>
-                                    <select name="service" value={formData.service} onChange={handleFormChange} required style={{ width: '100%', padding: '10px 15px', background: 'transparent', border: '1px solid #555', color: '#fff', fontFamily: "'Lato', sans-serif", fontSize: '13px', borderRadius: '3px', appearance: 'none' as const }}>
-                                      <option value="" disabled style={{ color: '#333' }}>Select a Service *</option>
-                                      {serviceOptions.map((s) => (
-                                        <option key={s} value={s} style={{ color: '#333' }}>{s}</option>
-                                      ))}
-                                    </select>
-                                  </li>
-                                  <li style={{ width: '100%', padding: '0 7.5px' }}>
-                                    <textarea name="description" rows={4} placeholder="Describe your project..." value={formData.description} onChange={handleFormChange}></textarea>
-                                  </li>
-                                  <li style={{ width: '100%', padding: '0 7.5px' }}>
-                                    <button type="submit" className="btn" disabled={formSubmitting} style={{ width: '100%', border: 'none', opacity: formSubmitting ? 0.7 : 1 }}>
-                                      {formSubmitting ? 'Submitting...' : 'SUBMIT REQUEST'}
-                                    </button>
-                                  </li>
-                                </ul>
-                              </form>
-                            </div>
-                          </div>
-                          <div className="col-7" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                            <img className="img-responsive banner-image" src="/images/slide-img-1.png" alt="" style={{ maxWidth: '80%' }} />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="col-5" style={{ display: 'flex', alignItems: 'center' }}>
-                            <img className="img-responsive banner-image" src="/images/slide-img-2.png" alt="" />
-                          </div>
-                          <div className="col-7">
-                            <div className="text-sec banner-content">
-                              <section>
-                                <h1>Just Call <span>+61 (123) 456 789</span></h1>
-                              </section>
-                              <section>
-                                <h1>We Are Always Ready to Serve</h1>
-                              </section>
-                              <Link to="/contact" className="btn btn-1">Get Quote</Link>
-                              <Link to="/about" className="btn">About Us</Link>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="slider-nav">
-          {[0, 1].map((i) => (
-            <button
-              key={i}
-              className={currentSlide === i ? 'active' : ''}
-              onClick={() => handleSlideChange(i)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* ======= DIAGONAL DIVIDER ======= */}
-      <div className="diagonal-divider diagonal-down"></div>
-
-      {/* ======= CINEMATIC COUNTERS ======= */}
-      <section className="cinematic-counters">
-        <div className="counters-parallax-bg" data-parallax="0.15"></div>
-        <div className="construction-sparks">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className={`spark spark-${i}`}></div>
-          ))}
-        </div>
-        <div className="container">
-          <div className="counters-grid">
-            {counters.map((c, idx) => (
-              <div key={idx} className="counter-item reveal" data-reveal-group="counters" style={{ transitionDelay: `${idx * 0.12}s` }}>
-                <div className="counter-icon">
-                  <i className={`fa ${c.icon}`}></i>
-                </div>
-                <div className="counter-number" data-count={c.count} data-suffix={c.suffix}>0</div>
-                <div className="counter-label">{c.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ======= DIAGONAL DIVIDER UP ======= */}
-      <div className="diagonal-divider diagonal-up"></div>
-
-      {/* ======= CONSTRUCTION PROCESS TIMELINE ======= */}
-      <section className="construction-process">
-        <div className="container">
-          <div className="tittle reveal">
-            <h2>Our Construction Process</h2>
-            <p>From blueprint to handover — every phase executed with precision</p>
-          </div>
-          <div className="process-timeline">
-            <div className="timeline-line">
-              <div className="timeline-progress" style={{ height: `${scrollProgress * 300}%` }}></div>
+      {/* ===== HERO ===== */}
+      <section id="hero" ref={heroRef} className="hero-section">
+        <div className="hero-bg-pattern" data-parallax="0.1" />
+        <div className="hero-content">
+          <div className="hero-text gsap-reveal">
+            <span className="hero-tag">★ TRUSTED SINCE 2010</span>
+            <h1 className="hero-title">
+              Building The <span className="text-accent">Future</span>,<br />
+              One Structure at a Time
+            </h1>
+            <p className="hero-desc">
+              Professional construction, renovation, and interior services.
+              From blueprint to handover — precision engineering at every phase.
+            </p>
+            <div className="hero-cta">
+              <Link to="/contact" className="btn btn-primary">Get Free Quote</Link>
+              <Link to="/services" className="btn btn-outline">Our Services</Link>
             </div>
-            {processSteps.map((step, idx) => (
-              <div key={idx} className={`process-step reveal ${idx % 2 === 0 ? 'step-left' : 'step-right'}`} data-reveal-group="process" style={{ transitionDelay: `${idx * 0.2}s` }}>
-                <div className="step-node">
-                  <div className="step-number">{step.num}</div>
-                </div>
-                <div className="step-content">
-                  <div className="step-icon-wrap">
-                    <i className={`fa ${step.icon}`}></i>
-                  </div>
-                  <h4>{step.title}</h4>
-                  <p>{step.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ======= SERVICES - ANIMATED CARDS ======= */}
-      <section className="services">
-        <div className="container">
-          <div className="tittle reveal">
-            <h2>Our Services</h2>
-            <p>Complete construction and renovation solutions for every need</p>
-          </div>
-          <div className="services-grid-animated">
-            {services.slice(0, 6).map((service, idx) => (
-              <div
-                key={service.id}
-                className="service-card reveal"
-                data-reveal-group="services"
-                style={{ transitionDelay: `${idx * 0.1}s` }}
-              >
-                <div className="service-icon">
-                  <i className={`fa ${service.icon}`}></i>
-                </div>
-                <h5>{service.title}</h5>
-                <ul>
-                  {service.items.slice(0, 3).map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <div className="reveal" style={{ textAlign: 'center', marginTop: '40px' }}>
-            <Link to="/services" className="btn">View All Services</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ======= FULL-SCREEN PARALLAX DIVIDER ======= */}
-      <section className="parallax-divider-full">
-        <div className="parallax-divider-bg" data-parallax="0.3">
-          <img src="/images/slide-1.jpg" alt="" />
-        </div>
-        <div className="parallax-divider-overlay"></div>
-        <div className="container parallax-divider-content">
-          <div className="reveal">
-            <span className="construction-tag">Est. 2010</span>
-            <h2>Building the Future, One Structure at a Time</h2>
-            <div className="golden-line"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* ======= WELCOME — CINEMATIC PARALLAX ======= */}
-      <section className="welcome-cinematic">
-        <div className="cinematic-bg" data-parallax="0.2">
-          <img src="/images/welcome-img.jpg" alt="" />
-          <div className="cinematic-overlay"></div>
-        </div>
-        <div className="container cinematic-welcome-content">
-          <div className="welcome-text-block reveal">
-            <span className="welcome-tag">Welcome to VR Construction</span>
-            <h2>Building Dreams Into Reality</h2>
-            <div className="welcome-divider"></div>
-            <p>We bring over 15 years of expertise to every project. From residential homes to commercial complexes, our team delivers quality craftsmanship with precision and care.</p>
-            <div className="welcome-stats">
-              <div className="welcome-stat">
-                <i className="fa fa-check-circle"></i>
+            <div className="hero-trust">
+              <div className="trust-item">
+                <i className="fa fa-shield"></i>
                 <span>Licensed & Insured</span>
               </div>
-              <div className="welcome-stat">
-                <i className="fa fa-check-circle"></i>
-                <span>Free Consultations</span>
+              <div className="trust-item">
+                <i className="fa fa-clock-o"></i>
+                <span>24/7 Support</span>
               </div>
-              <div className="welcome-stat">
-                <i className="fa fa-check-circle"></i>
-                <span>Quality Materials</span>
+              <div className="trust-item">
+                <i className="fa fa-star"></i>
+                <span>5-Star Rated</span>
               </div>
             </div>
-            <Link to="/about" className="btn">Discover More</Link>
+          </div>
+          <div className="hero-scene">
+            <ConstructionScene progress={heroProgress} />
+          </div>
+        </div>
+        <div className="hero-scroll-indicator">
+          <span>Scroll to Build</span>
+          <div className="scroll-arrow">
+            <i className="fa fa-chevron-down"></i>
           </div>
         </div>
       </section>
 
-      {/* ======= OFFER SERVICES (TABS) ======= */}
-      <section className="offer-services">
-        <div className="container">
-          <div className="tittle reveal">
-            <h2>Our Construction Services</h2>
-          </div>
-          <div className="row">
-            <div style={{ width: '25%', padding: '0 15px' }}>
-              <div role="tabpanel">
-                <ul className="nav nav-tabs" role="tablist">
-                  {services.map((s) => (
-                    <li
-                      key={s.id}
-                      role="presentation"
-                      className={activeTab === s.id ? 'active' : ''}
-                    >
-                      <a
-                        role="tab"
-                        onClick={() => setActiveTab(s.id)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <i className={`fa ${s.icon}`}></i>
-                        {s.title}
-                        <i className="fa fa-long-arrow-right tab-arrow"></i>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div style={{ width: '75%', padding: '0 15px' }}>
-              <div className="tab-content">
-                {services.map((s) => (
-                  <div
-                    key={s.id}
-                    role="tabpanel"
-                    className={`tab-pane${activeTab === s.id ? ' active' : ''}`}
-                  >
-                    <div className="row">
-                      <div style={{ width: '60%', padding: '0 15px' }}>
-                        <div className="tab-pane-inner">
-                          <h4>
-                            <i className={`fa ${s.icon}`}></i>
-                            {s.title}
-                          </h4>
-                          <p>Our experts have the state of the art tools, electronic equipment, and supplies to deliver any construction project in a timely manner.</p>
-                          <ul>
-                            {s.items.map((item, i) => (
-                              <li key={i} style={{ transitionDelay: `${i * 0.06}s` }}>
-                                <p><i className={`fa ${s.icon || 'fa-tint'}`}></i> {item}</p>
-                              </li>
-                            ))}
-                          </ul>
-                          <Link to="/services" className="btn">Learn More</Link>
-                        </div>
-                      </div>
-                      <div style={{ width: '40%', padding: '0 15px' }}>
-                        <img className="img-responsive img-up" src="/images/offer-img.jpg" alt={s.title} />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ===== CAUTION STRIPE ===== */}
+      <div className="caution-stripe" />
 
-      {/* ======= WHY CHOOSE US ======= */}
-      <section className="why-choose-cinematic">
+      {/* ===== STATS BAR ===== */}
+      <section className="stats-bar">
         <div className="container">
-          <div className="tittle reveal">
-            <h2>Why Choose Us</h2>
-            <p>What makes VR Construction stand out from the rest</p>
-          </div>
-          <div className="row why-grid">
-            {[
-              { icon: 'fa-shield', title: 'Trusted & Reliable', desc: 'Licensed and insured with a proven track record of successful projects across the region.' },
-              { icon: 'fa-clock-o', title: 'On-Time Delivery', desc: 'We respect your deadlines. Our project management ensures every phase is completed on schedule.' },
-              { icon: 'fa-certificate', title: 'Quality Assured', desc: 'Premium materials and skilled craftsmanship backed by our quality guarantee on all work.' },
-              { icon: 'fa-headphones', title: '24/7 Support', desc: 'Round-the-clock customer service. Call us anytime — we are always ready to help.' },
-            ].map((item, idx) => (
-              <div key={idx} style={{ width: '25%', padding: '0 15px' }}>
-                <div className="sec-in reveal" data-reveal-group="why" style={{ transitionDelay: `${idx * 0.12}s` }}>
-                  <i className={`fa ${item.icon}`}></i>
-                  <hr />
-                  <h6>{item.title}</h6>
-                  <p>{item.desc}</p>
+          <div className="stats-grid gsap-stagger">
+            {counters.map((c, idx) => (
+              <div key={idx} className="stat-item">
+                <div className="stat-icon">
+                  <i className={`fa ${c.icon}`}></i>
                 </div>
+                <div className="stat-number" data-count={c.count} data-suffix={c.suffix}>
+                  0
+                </div>
+                <div className="stat-label">{c.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ======= CONSTRUCTION PROGRESS BAR SECTION ======= */}
-      <section className="progress-section">
-        <div className="progress-bg-overlay"></div>
+      {/* ===== SERVICES ===== */}
+      <section className="section services-section">
         <div className="container">
-          <div className="row progress-row">
-            <div style={{ width: '50%', padding: '0 30px' }}>
-              <div className="reveal">
-                <span className="construction-tag">Track Record</span>
-                <h3>Decades of Proven Excellence</h3>
-                <p style={{ color: '#999', marginBottom: '30px', lineHeight: 1.8 }}>
-                  With over 15 years in the construction industry, we've completed hundreds of projects
-                  across residential, commercial, and industrial sectors. Our commitment to quality
-                  and timely delivery has earned us the trust of clients worldwide.
-                </p>
-                {[
-                  { label: 'Client Satisfaction', pct: 98 },
-                  { label: 'On-Time Completion', pct: 95 },
-                  { label: 'Budget Accuracy', pct: 92 },
-                ].map((bar, idx) => (
-                  <div key={idx} className="progress-bar-wrap reveal" style={{ transitionDelay: `${idx * 0.15}s` }}>
-                    <div className="progress-bar-header">
-                      <span>{bar.label}</span>
-                      <span>{bar.pct}%</span>
-                    </div>
-                    <div className="progress-bar-track">
-                      <div className="progress-bar-fill" style={{ '--bar-width': `${bar.pct}%` } as React.CSSProperties}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ width: '50%', padding: '0 30px' }}>
-              <div className="progress-image-stack reveal">
-                <img src="/images/ser-img-1.jpg" alt="Construction" className="progress-img progress-img-1" />
-                <img src="/images/ser-img-2.jpg" alt="Building" className="progress-img progress-img-2" />
-                <div className="progress-experience-badge">
-                  <span className="badge-number">15+</span>
-                  <span className="badge-text">Years</span>
+          <div className="section-header gsap-reveal">
+            <span className="section-tag">What We Do</span>
+            <h2>Our Services</h2>
+            <div className="section-line" />
+          </div>
+          <div className="services-grid gsap-stagger">
+            {services.slice(0, 8).map((s) => (
+              <div key={s.id} className="service-card-dark">
+                <div className="service-card-icon">
+                  <i className={`fa ${s.icon}`}></i>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ======= PARALLAX CTA ======= */}
-      <section className="parallax-cta">
-        <div className="parallax-cta-bg" data-parallax="0.25"></div>
-        <div className="parallax-cta-overlay"></div>
-        <div className="container parallax-cta-content">
-          <div className="reveal">
-            <h3>Need a Free Consultation?</h3>
-            <h1>Let's Build Something Amazing Together</h1>
-            <p>Call us now or fill out the form — we'll get back to you within 24 hours.</p>
-            <div className="parallax-cta-buttons">
-              <Link to="/contact" className="btn">Get Free Quote</Link>
-              <a href="tel:+61123456789" className="btn btn-cta-phone">
-                <i className="fa fa-phone"></i> +61 (123) 456 789
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ======= GALLERY ======= */}
-      <section className="gallery">
-        <div className="container">
-          <div className="tittle reveal">
-            <h2>Our Works Gallery</h2>
-          </div>
-        </div>
-        <div className="gallery-slide">
-          {galleryItems.map((item, idx) => (
-            <div key={idx} className="gal-item reveal" data-reveal-group="gallery" style={{ transitionDelay: `${idx * 0.08}s` }}>
-              <img src={`/images/${item.img}`} alt={item.title} />
-              <div className="gallery-over">
-                <Link to="/gallery" className="link-up link">
-                  <i className="fa fa-long-arrow-right"></i>
+                <h5>{s.title}</h5>
+                <p>{s.desc}</p>
+                <Link to="/services" className="service-link">
+                  Learn More <i className="fa fa-arrow-right"></i>
                 </Link>
-                <div className="items-text">
-                  <p>{item.category}</p>
-                  <h5>{item.title}</h5>
-                </div>
+              </div>
+            ))}
+          </div>
+          <div className="gsap-reveal" style={{ textAlign: 'center', marginTop: '50px' }}>
+            <Link to="/services" className="btn btn-primary">View All Services</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== REQUEST FORM ===== */}
+      <section className="section request-section">
+        <div className="request-bg-pattern" />
+        <div className="container">
+          <div className="request-grid">
+            <div className="request-info gsap-reveal">
+              <span className="section-tag">Get Started</span>
+              <h2>Request a Free Consultation</h2>
+              <p>Tell us about your project and we'll get back to you within 24 hours with a detailed plan and estimate.</p>
+              <div className="request-features">
+                {[
+                  { icon: 'fa-check-circle', text: 'Free site inspection & estimate' },
+                  { icon: 'fa-check-circle', text: 'Custom project planning' },
+                  { icon: 'fa-check-circle', text: 'Transparent pricing, no hidden costs' },
+                  { icon: 'fa-check-circle', text: 'Licensed & insured team' },
+                ].map((f, i) => (
+                  <div key={i} className="request-feature">
+                    <i className={`fa ${f.icon}`}></i>
+                    <span>{f.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+            <div className="request-form-wrap gsap-reveal">
+              {formSuccess && (
+                <div className="form-success-msg">
+                  <i className="fa fa-check-circle"></i>
+                  Thank you! We'll contact you soon.
+                </div>
+              )}
+              {formError && (
+                <div className="form-error-msg">
+                  <i className="fa fa-exclamation-circle"></i>
+                  {formError}
+                </div>
+              )}
+              <form onSubmit={handleFormSubmit}>
+                <div className="form-row">
+                  <input type="text" name="name" placeholder="Your Name *" value={formData.name} onChange={handleFormChange} required />
+                  <input type="email" name="email" placeholder="Email *" value={formData.email} onChange={handleFormChange} required />
+                </div>
+                <div className="form-row">
+                  <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleFormChange} />
+                  <select name="service" value={formData.service} onChange={handleFormChange} required>
+                    <option value="" disabled>Select Service *</option>
+                    {serviceOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <textarea name="description" rows={4} placeholder="Describe your project..." value={formData.description} onChange={handleFormChange} />
+                <button type="submit" className="btn btn-primary btn-full" disabled={formSubmitting}>
+                  {formSubmitting ? 'Sending...' : 'Submit Request'}
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ======= CLIENTS FEEDBACK ======= */}
-      <section className="clients">
+      {/* ===== PROCESS TIMELINE ===== */}
+      <section className="section process-section">
         <div className="container">
-          <div className="tittle reveal">
-            <h2>Feedback From Clients</h2>
+          <div className="section-header gsap-reveal">
+            <span className="section-tag">How We Work</span>
+            <h2>Our Process</h2>
+            <div className="section-line" />
           </div>
-          <ul className="row">
-            {[
-              { name: 'John Smith', role: 'Home Owner', avatar: 'avatar-1.jpg', text: 'VR Construction delivered exceptional quality on our home renovation. Their attention to detail and professional approach exceeded our expectations.' },
-              { name: 'Sarah Johnson', role: 'Business Owner', avatar: 'avatar-2.jpg', text: 'Outstanding commercial construction work! The team was professional, on time, and within budget. Highly recommended for any construction project.' },
-              { name: 'Michael Brown', role: 'Property Developer', avatar: 'avatar-3.jpg', text: 'Working with VR Construction has been a pleasure. Their expertise in civil engineering and project management is unmatched in the industry.' },
-            ].map((client, idx) => (
-              <li key={idx} className="reveal" data-reveal-group="clients" style={{ flex: 1, transitionDelay: `${idx * 0.15}s` }}>
-                <div className="avatar">
-                  <img src={`/images/${client.avatar}`} alt={client.name} />
+          <div className="process-timeline">
+            <div className="timeline-track">
+              <div className="timeline-fill" />
+              <div id="process-truck" className="timeline-truck">
+                <svg viewBox="0 0 40 20" width="40" height="20">
+                  <rect x="0" y="5" width="24" height="12" fill="#F5A623" rx="2" />
+                  <rect x="24" y="8" width="14" height="9" fill="#D4912A" rx="1" />
+                  <circle cx="10" cy="18" r="3" fill="#333" stroke="#555" strokeWidth="1" />
+                  <circle cx="32" cy="18" r="3" fill="#333" stroke="#555" strokeWidth="1" />
+                </svg>
+              </div>
+            </div>
+            <div className="process-steps gsap-stagger">
+              {processSteps.map((step, idx) => (
+                <div key={idx} className="process-step">
+                  <div className="step-num">{step.num}</div>
+                  <div className="step-icon">
+                    <i className={`fa ${step.icon}`}></i>
+                  </div>
+                  <h5>{step.title}</h5>
+                  <p>{step.desc}</p>
                 </div>
-                <div className="clients-in">
-                  <p>{client.text}</p>
-                  <h6>{client.name} - <span>{client.role}</span></h6>
-                </div>
-              </li>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== GALLERY ===== */}
+      <section className="section gallery-section">
+        <div className="container">
+          <div className="section-header gsap-reveal">
+            <span className="section-tag">Our Work</span>
+            <h2>Project Gallery</h2>
+            <div className="section-line" />
+          </div>
+          <div className="gallery-filters gsap-reveal">
+            {['all', 'residential', 'commercial', 'infrastructure', 'renovation'].map((f) => (
+              <button
+                key={f}
+                className={`filter-btn ${galleryFilter === f ? 'active' : ''}`}
+                onClick={() => setGalleryFilter(f)}
+              >
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+              </button>
             ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* ======= BLOG ======= */}
-      <section className="blog">
-        <div className="container">
-          <div className="tittle reveal">
-            <h2>News From Blog</h2>
           </div>
-          <ul className="row">
-            {[
-              { img: 'b-img-1.jpg', title: 'We Provide 24 Hours Service' },
-              { img: 'b-img-2.jpg', title: 'Quality Construction Materials' },
-              { img: 'b-img-3.jpg', title: 'Modern Building Techniques' },
-            ].map((post, idx) => (
-              <li key={idx} className="reveal" data-reveal-group="blog" style={{ width: '33.333%', padding: '0 15px', transitionDelay: `${idx * 0.15}s` }}>
-                <div className="b-inner">
-                  <img className="img-responsive" src={`/images/${post.img}`} alt={post.title} />
-                  <div className="b-details">
-                    <span><i className="fa fa-clock-o"></i> Mar 23, 2025</span>
-                    <Link to="/blog">{post.title}</Link>
+          <div className="gallery-grid gsap-stagger">
+            {filteredGallery.map((item, idx) => (
+              <div key={idx} className="gallery-item-dark">
+                <img src={`/images/${item.img}`} alt={item.title} />
+                <div className="gallery-overlay">
+                  <div className="gallery-overlay-content">
+                    <span className="gallery-cat">{item.category}</span>
+                    <h5>{item.title}</h5>
+                    <Link to="/gallery" className="gallery-link">
+                      <i className="fa fa-expand"></i>
+                    </Link>
                   </div>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
-      {/* ======= PARTNERS ======= */}
-      <section className="parthner">
+      {/* ===== TESTIMONIALS ===== */}
+      <section className="section testimonials-section">
+        <div className="testimonials-bg" data-parallax="0.15" />
         <div className="container">
-          <div className="tittle reveal">
-            <h2>Partners / Clients</h2>
+          <div className="section-header gsap-reveal">
+            <span className="section-tag">Testimonials</span>
+            <h2>What Clients Say</h2>
+            <div className="section-line" />
           </div>
-          <div className="parthner-slide">
+          <div className="testimonial-carousel">
+            {testimonials.map((t, idx) => (
+              <div key={idx} className={`testimonial-card ${idx === activeTestimonial ? 'active' : ''}`}>
+                <div className="testimonial-quote">
+                  <i className="fa fa-quote-left"></i>
+                </div>
+                <p>{t.text}</p>
+                <div className="testimonial-author">
+                  <img src={`/images/${t.avatar}`} alt={t.name} />
+                  <div>
+                    <h6>{t.name}</h6>
+                    <span>{t.role}</span>
+                  </div>
+                </div>
+                <div className="testimonial-stars">
+                  {[1, 2, 3, 4, 5].map((s) => <i key={s} className="fa fa-star"></i>)}
+                </div>
+              </div>
+            ))}
+            <div className="testimonial-dots">
+              {testimonials.map((_, idx) => (
+                <button
+                  key={idx}
+                  className={`dot ${idx === activeTestimonial ? 'active' : ''}`}
+                  onClick={() => setActiveTestimonial(idx)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== CTA SECTION ===== */}
+      <section className="section cta-section">
+        <div className="cta-bg" data-parallax="0.2" />
+        <div className="cta-overlay" />
+        <div className="container cta-content gsap-reveal">
+          <h2>Ready to Build Your Dream?</h2>
+          <p>Let's turn your vision into reality. Contact us for a free consultation.</p>
+          <div className="cta-buttons">
+            <Link to="/contact" className="btn btn-primary">Get Free Quote</Link>
+            <a href="tel:+61123456789" className="btn btn-outline">
+              <i className="fa fa-phone"></i> +61 (123) 456 789
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== BLOG ===== */}
+      <section className="section blog-section">
+        <div className="container">
+          <div className="section-header gsap-reveal">
+            <span className="section-tag">Latest News</span>
+            <h2>From Our Blog</h2>
+            <div className="section-line" />
+          </div>
+          <div className="blog-grid gsap-stagger">
+            {[
+              { img: 'b-img-1.jpg', title: 'We Provide 24 Hours Service', date: 'Mar 23, 2025' },
+              { img: 'b-img-2.jpg', title: 'Quality Construction Materials', date: 'Mar 15, 2025' },
+              { img: 'b-img-3.jpg', title: 'Modern Building Techniques', date: 'Mar 8, 2025' },
+            ].map((post, idx) => (
+              <div key={idx} className="blog-card-dark">
+                <div className="blog-card-img">
+                  <img src={`/images/${post.img}`} alt={post.title} />
+                </div>
+                <div className="blog-card-content">
+                  <span><i className="fa fa-clock-o"></i> {post.date}</span>
+                  <Link to="/blog">{post.title}</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== PARTNERS ===== */}
+      <section className="section partners-section">
+        <div className="container">
+          <div className="section-header gsap-reveal">
+            <span className="section-tag">Trusted By</span>
+            <h2>Our Partners</h2>
+            <div className="section-line" />
+          </div>
+          <div className="partners-grid gsap-stagger">
             {[1, 2, 3, 4, 5].map((num) => (
-              <div key={num} className="part reveal" data-reveal-group="partners" style={{ transitionDelay: `${num * 0.1}s` }}>
-                <a href="#"><img src={`/images/parthner-img-${num}.png`} alt="Partner" /></a>
+              <div key={num} className="partner-item">
+                <img src={`/images/parthner-img-${num}.png`} alt="Partner" />
               </div>
             ))}
           </div>

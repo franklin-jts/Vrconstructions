@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path ? 'active' : '';
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <header>
+    <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
       <div className="container header-inner">
         {/* Logo */}
         <div className="header-logo">
           <Link to="/">
-            <span className="logo-text">VR<span className="logo-accent">Construction</span></span>
+            <span className="logo-text">
+              <span className="logo-vr">VR</span>
+              <span className="logo-accent">Construction</span>
+            </span>
           </Link>
         </div>
 
