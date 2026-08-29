@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useScrollProgress } from '../hooks/useScrollProgress';
 import { EMAILJS_CONFIG } from '../config/email';
 
 const services = [
@@ -36,6 +37,13 @@ const counters = [
   { icon: 'fa-handshake-o', count: 50, suffix: '+', label: 'Expert Workers' },
 ];
 
+const processSteps = [
+  { num: '01', icon: 'fa-pencil-square-o', title: 'Planning & Design', desc: 'Our architects craft detailed blueprints and 3D models, mapping every beam, pipe, and wire before ground is broken.' },
+  { num: '02', icon: 'fa-road', title: 'Foundation & Structure', desc: 'Steel reinforcement, concrete pouring, and structural framing — the backbone of your building rises from the earth.' },
+  { num: '03', icon: 'fa-cogs', title: 'MEP & Systems', desc: 'Electrical wiring, plumbing networks, HVAC ducting, and fire safety systems are installed with precision.' },
+  { num: '04', icon: 'fa-paint-brush', title: 'Interior & Finishing', desc: 'Flooring, tiling, painting, false ceilings, cabinetry, and final touches transform structure into home.' },
+];
+
 const serviceOptions = services.map((s) => s.title);
 
 const Home: React.FC = () => {
@@ -53,6 +61,7 @@ const Home: React.FC = () => {
     description: '',
   });
   const sectionRef = useScrollReveal('.reveal');
+  const scrollProgress = useScrollProgress();
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -112,6 +121,14 @@ const Home: React.FC = () => {
 
   return (
     <div ref={sectionRef}>
+      {/* ======= SCROLL PROGRESS BAR ======= */}
+      <div className="scroll-progress-bar">
+        <div className="scroll-progress-fill" style={{ width: `${scrollProgress * 100}%` }}></div>
+      </div>
+
+      {/* ======= BLUEPRINT GRID OVERLAY (decorative) ======= */}
+      <div className="blueprint-grid-bg"></div>
+
       {/* ======= BANNER ======= */}
       <div id="banner">
         <div className="flex-banner">
@@ -122,6 +139,8 @@ const Home: React.FC = () => {
                 className={`banner-slide ${currentSlide === i ? 'active' : ''} ${currentSlide === i && isTransitioning ? 'entering' : ''}`}
               >
                 <img src={`/images/slide-${i === 0 ? '1' : '2'}.jpg`} alt="VR Construction" />
+                {/* Cinematic vignette */}
+                <div className="banner-vignette"></div>
                 <div className="banner-up">
                   <div className="container">
                     <div className="row">
@@ -218,9 +237,17 @@ const Home: React.FC = () => {
         </div>
       </div>
 
+      {/* ======= DIAGONAL DIVIDER ======= */}
+      <div className="diagonal-divider diagonal-down"></div>
+
       {/* ======= CINEMATIC COUNTERS ======= */}
       <section className="cinematic-counters">
         <div className="counters-parallax-bg" data-parallax="0.15"></div>
+        <div className="construction-sparks">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className={`spark spark-${i}`}></div>
+          ))}
+        </div>
         <div className="container">
           <div className="counters-grid">
             {counters.map((c, idx) => (
@@ -230,6 +257,38 @@ const Home: React.FC = () => {
                 </div>
                 <div className="counter-number" data-count={c.count} data-suffix={c.suffix}>0</div>
                 <div className="counter-label">{c.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ======= DIAGONAL DIVIDER UP ======= */}
+      <div className="diagonal-divider diagonal-up"></div>
+
+      {/* ======= CONSTRUCTION PROCESS TIMELINE ======= */}
+      <section className="construction-process">
+        <div className="container">
+          <div className="tittle reveal">
+            <h2>Our Construction Process</h2>
+            <p>From blueprint to handover — every phase executed with precision</p>
+          </div>
+          <div className="process-timeline">
+            <div className="timeline-line">
+              <div className="timeline-progress" style={{ height: `${scrollProgress * 300}%` }}></div>
+            </div>
+            {processSteps.map((step, idx) => (
+              <div key={idx} className={`process-step reveal ${idx % 2 === 0 ? 'step-left' : 'step-right'}`} data-reveal-group="process" style={{ transitionDelay: `${idx * 0.2}s` }}>
+                <div className="step-node">
+                  <div className="step-number">{step.num}</div>
+                </div>
+                <div className="step-content">
+                  <div className="step-icon-wrap">
+                    <i className={`fa ${step.icon}`}></i>
+                  </div>
+                  <h4>{step.title}</h4>
+                  <p>{step.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -257,7 +316,7 @@ const Home: React.FC = () => {
                 <h5>{service.title}</h5>
                 <ul>
                   {service.items.slice(0, 3).map((item, i) => (
-                    <li key={i} style={{ transitionDelay: `${i * 0.05}s` }}>{item}</li>
+                    <li key={i}>{item}</li>
                   ))}
                 </ul>
               </div>
@@ -265,6 +324,21 @@ const Home: React.FC = () => {
           </div>
           <div className="reveal" style={{ textAlign: 'center', marginTop: '40px' }}>
             <Link to="/services" className="btn">View All Services</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ======= FULL-SCREEN PARALLAX DIVIDER ======= */}
+      <section className="parallax-divider-full">
+        <div className="parallax-divider-bg" data-parallax="0.3">
+          <img src="/images/slide-1.jpg" alt="" />
+        </div>
+        <div className="parallax-divider-overlay"></div>
+        <div className="container parallax-divider-content">
+          <div className="reveal">
+            <span className="construction-tag">Est. 2010</span>
+            <h2>Building the Future, One Structure at a Time</h2>
+            <div className="golden-line"></div>
           </div>
         </div>
       </section>
@@ -281,6 +355,20 @@ const Home: React.FC = () => {
             <h2>Building Dreams Into Reality</h2>
             <div className="welcome-divider"></div>
             <p>We bring over 15 years of expertise to every project. From residential homes to commercial complexes, our team delivers quality craftsmanship with precision and care.</p>
+            <div className="welcome-stats">
+              <div className="welcome-stat">
+                <i className="fa fa-check-circle"></i>
+                <span>Licensed & Insured</span>
+              </div>
+              <div className="welcome-stat">
+                <i className="fa fa-check-circle"></i>
+                <span>Free Consultations</span>
+              </div>
+              <div className="welcome-stat">
+                <i className="fa fa-check-circle"></i>
+                <span>Quality Materials</span>
+              </div>
+            </div>
             <Link to="/about" className="btn">Discover More</Link>
           </div>
         </div>
@@ -377,6 +465,51 @@ const Home: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ======= CONSTRUCTION PROGRESS BAR SECTION ======= */}
+      <section className="progress-section">
+        <div className="progress-bg-overlay"></div>
+        <div className="container">
+          <div className="row progress-row">
+            <div style={{ width: '50%', padding: '0 30px' }}>
+              <div className="reveal">
+                <span className="construction-tag">Track Record</span>
+                <h3>Decades of Proven Excellence</h3>
+                <p style={{ color: '#999', marginBottom: '30px', lineHeight: 1.8 }}>
+                  With over 15 years in the construction industry, we've completed hundreds of projects
+                  across residential, commercial, and industrial sectors. Our commitment to quality
+                  and timely delivery has earned us the trust of clients worldwide.
+                </p>
+                {[
+                  { label: 'Client Satisfaction', pct: 98 },
+                  { label: 'On-Time Completion', pct: 95 },
+                  { label: 'Budget Accuracy', pct: 92 },
+                ].map((bar, idx) => (
+                  <div key={idx} className="progress-bar-wrap reveal" style={{ transitionDelay: `${idx * 0.15}s` }}>
+                    <div className="progress-bar-header">
+                      <span>{bar.label}</span>
+                      <span>{bar.pct}%</span>
+                    </div>
+                    <div className="progress-bar-track">
+                      <div className="progress-bar-fill" style={{ '--bar-width': `${bar.pct}%` } as React.CSSProperties}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ width: '50%', padding: '0 30px' }}>
+              <div className="progress-image-stack reveal">
+                <img src="/images/ser-img-1.jpg" alt="Construction" className="progress-img progress-img-1" />
+                <img src="/images/ser-img-2.jpg" alt="Building" className="progress-img progress-img-2" />
+                <div className="progress-experience-badge">
+                  <span className="badge-number">15+</span>
+                  <span className="badge-text">Years</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
