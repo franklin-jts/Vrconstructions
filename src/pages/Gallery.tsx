@@ -24,18 +24,14 @@ const filters = [
 
 const Gallery: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState('*');
-
-  const filteredItems = activeFilter === '*'
-    ? galleryItems
-    : galleryItems.filter(item => item.categories.includes(activeFilter));
+  const filteredItems = activeFilter === '*' ? galleryItems : galleryItems.filter(item => item.categories.includes(activeFilter));
 
   return (
     <>
-      {/* Sub Banner */}
       <div className="sub-banner">
         <div className="container">
           <h1>Gallery</h1>
-          <p className="exo">We have 25 years experience in construction</p>
+          <p>We have 25 years experience in construction</p>
         </div>
         <ol className="breadcrumb">
           <li><Link to="/">Home</Link></li>
@@ -43,60 +39,31 @@ const Gallery: React.FC = () => {
         </ol>
       </div>
 
-      {/* Portfolio */}
-      <section id="portfolio">
-        <div className="portfolio portfolio-filter" style={{ padding: '80px 0' }}>
-          <div className="portfolio-wrapper" style={{ padding: '0 15px' }}>
-            <div className="container">
-              <div className="nav-icon"><i className="fa fa-navicon"></i></div>
-
-              {/* Filter */}
-              <ul className="filter" style={{ display: 'flex', gap: '5px', justifyContent: 'center', marginBottom: '40px', flexWrap: 'wrap' }}>
-                {filters.map((f, idx) => (
-                  <li key={f.value}>
-                    <a
-                      className={activeFilter === f.value ? 'active' : ''}
-                      onClick={() => setActiveFilter(f.value)}
-                      style={{
-                        cursor: 'pointer',
-                        padding: '8px 20px',
-                        background: activeFilter === f.value ? '#e8b730' : '#f5f5f5',
-                        color: activeFilter === f.value ? '#fff' : '#666',
-                        borderRadius: '3px',
-                        fontFamily: "'Exo 2', sans-serif",
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        transition: 'all 0.3s',
-                      }}
-                    >
-                      {f.label}
-                    </a>
-                    {idx < filters.length - 1 ? ' / ' : ''}
-                  </li>
-                ))}
-              </ul>
-
-              {/* Items */}
-              <ul className="items" style={{ display: 'flex', flexWrap: 'wrap', gap: '0' }}>
-                {filteredItems.map((item, idx) => (
-                  <li key={idx} style={{ width: '33.333%', padding: '5px' }}>
-                    <div className="gal-item">
-                      <img src={`/images/${item.img}`} alt={item.title} />
-                      <div className="gallery-over">
-                        <Link to="/gallery" className="link-up link">
-                          <i className="fa fa-long-arrow-right"></i>
-                        </Link>
-                        <div className="items-text">
-                          <p>{item.category}</p>
-                          <h5>{item.title}</h5>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <section className="section" style={{ background: 'var(--c-bg)' }}>
+        <div className="container">
+          <div className="gallery-filters">
+            {filters.map((f) => (
+              <button
+                key={f.value}
+                className={`filter-btn ${activeFilter === f.value ? 'active' : ''}`}
+                onClick={() => setActiveFilter(f.value)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <div className="gallery-grid">
+            {filteredItems.map((item, idx) => (
+              <div key={idx} className="gallery-item-dark">
+                <img src={`/images/${item.img}`} alt={item.title} />
+                <div className="gallery-overlay">
+                  <div className="gallery-overlay-content">
+                    <span className="gallery-cat">{item.category}</span>
+                    <h5>{item.title}</h5>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
