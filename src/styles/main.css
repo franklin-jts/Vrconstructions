@@ -410,6 +410,40 @@ nav { flex-shrink: 0; }
   background-image: radial-gradient(circle at 20px 20px, rgba(245, 166, 35, 0.03) 1.5px, transparent 1.5px);
   background-size: 40px 40px; pointer-events: none;
 }
+.contact-cards-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-bottom: 40px;
+}
+.contact-card-dark {
+  padding: 30px; background: var(--c-surface);
+  border: 1px solid var(--c-border); border-radius: 8px;
+  text-align: center; transition: transform 0.3s, border-color 0.3s;
+}
+.contact-card-dark:hover {
+  transform: translateY(-4px);
+  border-color: var(--c-accent);
+}
+.contact-card-dark i {
+  font-size: 28px; color: var(--c-accent);
+  margin-bottom: 15px; display: block;
+}
+.contact-card-dark h6 {
+  font-family: var(--f-heading); font-size: 14px;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--c-white); margin-bottom: 8px;
+}
+.contact-card-line {
+  width: 30px; height: 2px; background: var(--c-accent);
+  margin: 10px auto;
+}
+.contact-card-dark h4 {
+  font-family: var(--f-heading); font-size: 18px;
+  color: var(--c-accent); font-weight: 700; margin-bottom: 8px;
+}
+.contact-card-dark p {
+  font-size: 13px; color: var(--c-text-dim); margin: 0;
+}
+@media (max-width: 768px) { .contact-cards-row { grid-template-columns: 1fr; } }
 .request-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
 .request-info h2 { font-size: 32px; margin-bottom: 15px; }
 .request-info > p { margin-bottom: 30px; }
@@ -438,6 +472,11 @@ nav { flex-shrink: 0; }
 }
 .request-form-wrap select option { background: var(--c-bg); color: var(--c-white); }
 .request-form-wrap textarea { resize: vertical; min-height: 100px; }
+.request-form-wrap label {
+  display: block; font-family: var(--f-heading); font-size: 13px;
+  font-weight: 500; color: var(--c-white); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
 .form-success-msg {
   display: flex; align-items: center; gap: 10px; padding: 14px 18px;
   background: rgba(52, 199, 89, 0.1); border: 1px solid rgba(52, 199, 89, 0.3);

@@ -224,43 +224,66 @@ const Home: React.FC = () => {
         {/* REQUEST FORM */}
         <section className="overlay-section">
           <div className="container">
-            <div className="request-grid">
-              <div className="request-info gsap-reveal">
-                <span className="section-tag">Get Started</span>
-                <h2>Request a Free Consultation</h2>
-                <p>Tell us about your project and we'll get back to you within 24 hours.</p>
-                <div className="request-features">
-                  {[
-                    { icon: 'fa-check-circle', text: 'Free site inspection & estimate' },
-                    { icon: 'fa-check-circle', text: 'Custom project planning' },
-                    { icon: 'fa-check-circle', text: 'Transparent pricing' },
-                    { icon: 'fa-check-circle', text: 'Licensed & insured team' },
-                  ].map((f, i) => (
-                    <div key={i} className="request-feature"><i className={`fa ${f.icon}`}></i><span>{f.text}</span></div>
-                  ))}
+            <div className="section-header gsap-reveal">
+              <span className="section-tag">Contact Us</span>
+              <h2>Request Service or Estimate</h2>
+              <div className="section-line" />
+              <p>Feel free to call us or complete the form below.</p>
+            </div>
+
+            {/* Contact Cards */}
+            <div className="contact-cards-row gsap-stagger">
+              {[
+                { icon: 'fa-phone', title: 'Call Us 24/7', detail: '+61 (123) 456 789', sub: 'Emergency Service Available' },
+                { icon: 'fa-map-marker', title: 'Contact Address', detail: '44 New Design Street, Melbourne 005', sub: 'info@vrconstruction.com' },
+                { icon: 'fa-envelope', title: 'Email Us', detail: 'info@vrconstruction.com', sub: 'Quick Response Within 24 Hours' },
+              ].map((item, idx) => (
+                <div key={idx} className="contact-card-dark">
+                  <i className={`fa ${item.icon}`}></i>
+                  <h6>{item.title}</h6>
+                  <div className="contact-card-line" />
+                  <h4>{item.detail}</h4>
+                  <p>{item.sub}</p>
                 </div>
-              </div>
-              <div className="request-form-wrap gsap-reveal">
-                {formSuccess && <div className="form-success-msg"><i className="fa fa-check-circle"></i>Thank you! We'll contact you soon.</div>}
-                {formError && <div className="form-error-msg"><i className="fa fa-exclamation-circle"></i>{formError}</div>}
-                <form onSubmit={handleFormSubmit}>
-                  <div className="form-row">
-                    <input type="text" name="name" placeholder="Your Name *" value={formData.name} onChange={handleFormChange} required />
-                    <input type="email" name="email" placeholder="Email *" value={formData.email} onChange={handleFormChange} required />
+              ))}
+            </div>
+
+            {/* Form */}
+            <div className="request-form-wrap gsap-reveal">
+              {formSuccess && <div className="form-success-msg"><i className="fa fa-paper-plane-o"></i>Thank You. Your Message Has Been Submitted</div>}
+              {formError && <div className="form-error-msg"><i className="fa fa-exclamation-circle"></i>{formError}</div>}
+              <form onSubmit={handleFormSubmit}>
+                <div className="form-row">
+                  <div>
+                    <label>Name *</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleFormChange} required />
                   </div>
-                  <div className="form-row">
-                    <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleFormChange} />
+                  <div>
+                    <label>Email *</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleFormChange} required />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div>
+                    <label>Phone *</label>
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleFormChange} required />
+                  </div>
+                  <div>
+                    <label>Select Service</label>
                     <select name="service" value={formData.service} onChange={handleFormChange} required>
-                      <option value="" disabled>Select Service *</option>
+                      <option value="" disabled>Choose a service *</option>
                       {serviceOptions.map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
-                  <textarea name="description" rows={3} placeholder="Describe your project..." value={formData.description} onChange={handleFormChange} />
-                  <button type="submit" className="btn btn-primary btn-full" disabled={formSubmitting}>
-                    {formSubmitting ? 'Sending...' : 'Submit Request'}
-                  </button>
-                </form>
-              </div>
+                </div>
+                <div>
+                  <label>Description of Work Needed</label>
+                  <textarea name="description" rows={5} value={formData.description} onChange={handleFormChange} style={{ width: '100%', padding: '12px 16px', background: 'var(--c-bg)', border: '1px solid var(--c-border)', borderRadius: '4px', color: 'var(--c-white)', fontFamily: 'var(--f-body)', fontSize: '13px', resize: 'vertical', marginBottom: '15px' }} />
+                </div>
+                <button type="submit" className="btn btn-primary btn-full" disabled={formSubmitting} style={{ border: 'none' }}>
+                  {formSubmitting ? 'Sending...' : 'Send Request'}
+                </button>
+              </form>
             </div>
           </div>
         </section>
