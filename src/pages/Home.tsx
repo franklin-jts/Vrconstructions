@@ -11,24 +11,13 @@ gsap.registerPlugin(ScrollTrigger);
 const services = [
   { id: 'construction', title: 'Construction', icon: 'fa-building', desc: 'Residential, commercial, and warehouse builds from foundation to finish.' },
   { id: 'renovation', title: 'Renovation', icon: 'fa-refresh', desc: 'Complete home renovation and remodeling services.' },
-  { id: 'electrical', title: 'Electrical', icon: 'fa-bolt', desc: 'Wiring, panel installation, lighting, and safety inspections.' },
-  { id: 'plumbing', title: 'Plumbing', icon: 'fa-tint', desc: 'Pipe installation, bathroom, kitchen, and water line services.' },
-  { id: 'tiles', title: 'Tiles Laying', icon: 'fa-th-large', desc: 'Marble, granite, ceramic — wall and floor tiling.' },
-  { id: 'carpentry', title: 'Carpentry', icon: 'fa-tree', desc: 'Custom woodwork, doors, windows, framing, and finishing.' },
-  { id: 'fabrication', title: 'Fabrication', icon: 'fa-wrench', desc: 'M.S, S.S, aluminum, and custom metal fabrication.' },
-  { id: 'falseceiling', title: 'False Ceiling', icon: 'fa-server', desc: 'Gypsum, POP, grid, and decorative ceiling systems.' },
-  { id: 'painting', title: 'Painting', icon: 'fa-paint-brush', desc: 'Interior, exterior, texture, and waterproof coatings.' },
   { id: 'interior', title: 'Interior Work', icon: 'fa-home', desc: 'Kitchens, wardrobes, TV cabinets, wall paneling.' },
-  { id: 'waterproofing', title: 'Waterproofing', icon: 'fa-shield', desc: 'Roof, basement, bathroom, and terrace waterproofing.' },
+  { id: 'painting', title: 'Painting', icon: 'fa-paint-brush', desc: 'Interior, exterior, texture, and waterproof coatings.' },
 ];
 
-const galleryItems = [
-  { img: 'gallery-img-1.jpg', category: 'residential', title: 'Modern Villa Construction' },
-  { img: 'gallery-img-2.jpg', category: 'commercial', title: 'Commercial Complex' },
-  { img: 'gallery-img-3.jpg', category: 'infrastructure', title: 'Bridge Infrastructure' },
-  { img: 'gallery-img-4.jpg', category: 'industrial', title: 'Industrial Facility' },
-  { img: 'gallery-img-5.jpg', category: 'renovation', title: 'Interior Renovation' },
-  { img: 'gallery-img-2.jpg', category: 'infrastructure', title: 'Road Construction' },
+const allServiceNames = [
+  'Construction', 'Renovation', 'Electrical', 'Plumbing', 'Tiles Laying',
+  'Carpentry', 'Fabrication', 'False Ceiling', 'Painting', 'Interior Work', 'Waterproofing',
 ];
 
 const counters = [
@@ -38,35 +27,17 @@ const counters = [
   { icon: 'fa-map-marker', count: 12, suffix: '', label: 'Cities Covered' },
 ];
 
-const processSteps = [
-  { num: '01', icon: 'fa-pencil-square-o', title: 'Planning', desc: 'Site survey, blueprints, 3D models, permits.' },
-  { num: '02', icon: 'fa-pencil', title: 'Design', desc: 'Architectural design, material selection, budgeting.' },
-  { num: '03', icon: 'fa-building', title: 'Build', desc: 'Foundation, structure, MEP, and finishing.' },
-  { num: '04', icon: 'fa-check-circle', title: 'Handover', desc: 'Quality inspection, documentation, keys delivered.' },
-];
-
-const testimonials = [
-  { name: 'John Smith', role: 'Home Owner', avatar: 'avatar-1.jpg', text: 'VR Construction delivered exceptional quality on our home renovation. Their attention to detail exceeded our expectations.' },
-  { name: 'Sarah Johnson', role: 'Business Owner', avatar: 'avatar-2.jpg', text: 'Outstanding commercial work! Professional team, on time, within budget. Highly recommended.' },
-  { name: 'Michael Brown', role: 'Property Developer', avatar: 'avatar-3.jpg', text: 'Unmatched expertise in civil engineering and project management. A true pleasure to work with.' },
-];
-
-const serviceOptions = services.map((s) => s.title);
-
 const Home: React.FC = () => {
   const [buildProgress, setBuildProgress] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState('');
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: '', description: '' });
-  const [galleryFilter, setGalleryFilter] = useState('all');
 
   const pageRef = useRef<HTMLDivElement>(null);
 
   // Scroll-driven building progress
-  // Building constructs through first 60% of page scroll, then stays complete
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
@@ -74,7 +45,6 @@ const Home: React.FC = () => {
         requestAnimationFrame(() => {
           const scrollTop = window.scrollY;
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          // Map scroll to 0-1 over first 60% of page, then cap at 1
           const rawPct = docHeight > 0 ? scrollTop / docHeight : 0;
           const buildPct = Math.min(rawPct / 0.6, 1);
           setBuildProgress(buildPct);
@@ -114,12 +84,6 @@ const Home: React.FC = () => {
     return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
   }, []);
 
-  // Auto-rotate testimonials
-  useEffect(() => {
-    const iv = setInterval(() => setActiveTestimonial((p) => (p + 1) % testimonials.length), 5000);
-    return () => clearInterval(iv);
-  }, []);
-
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -137,22 +101,20 @@ const Home: React.FC = () => {
     finally { setFormSubmitting(false); }
   };
 
-  const filteredGallery = galleryFilter === 'all' ? galleryItems : galleryItems.filter((g) => g.category === galleryFilter);
-
   return (
     <>
-      {/* ===== FIXED CONSTRUCTION SCENE BACKGROUND ===== */}
+      {/* FIXED CONSTRUCTION SCENE BACKGROUND */}
       <div className="scene-fixed-bg">
         <ConstructionScene progress={buildProgress} />
         <div className="scene-vignette" />
       </div>
 
-      {/* ===== SCROLL PROGRESS ===== */}
+      {/* SCROLL PROGRESS */}
       <div className="scroll-progress-bar">
         <div className="scroll-progress-fill" style={{ width: `${scrollProgress * 100}%` }} />
       </div>
 
-      {/* ===== ALL SECTIONS (scroll over the scene) ===== */}
+      {/* PAGE CONTENT */}
       <div ref={pageRef} className="page-content">
 
         {/* HERO */}
@@ -202,7 +164,7 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* SERVICES */}
+        {/* SERVICES — showcase 4 key services with link to full page */}
         <section className="overlay-section">
           <div className="container">
             <div className="section-header gsap-reveal">
@@ -211,7 +173,7 @@ const Home: React.FC = () => {
               <div className="section-line" />
             </div>
             <div className="services-grid gsap-stagger">
-              {services.slice(0, 8).map((s) => (
+              {services.map((s) => (
                 <div key={s.id} className="service-card-dark">
                   <div className="service-card-icon"><i className={`fa ${s.icon}`}></i></div>
                   <h5>{s.title}</h5>
@@ -221,7 +183,7 @@ const Home: React.FC = () => {
               ))}
             </div>
             <div className="gsap-reveal" style={{ textAlign: 'center', marginTop: '50px' }}>
-              <Link to="/services" className="btn btn-primary">View All Services</Link>
+              <Link to="/services" className="btn btn-primary">View All 11 Services</Link>
             </div>
           </div>
         </section>
@@ -277,7 +239,7 @@ const Home: React.FC = () => {
                     <label>Select Service</label>
                     <select name="service" value={formData.service} onChange={handleFormChange} required>
                       <option value="" disabled>Choose a service *</option>
-                      {serviceOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+                      {allServiceNames.map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
                 </div>
@@ -293,89 +255,6 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* PROCESS */}
-        <section className="overlay-section">
-          <div className="container">
-            <div className="section-header gsap-reveal">
-              <span className="section-tag">How We Work</span>
-              <h2>Our Process</h2>
-              <div className="section-line" />
-            </div>
-            <div className="process-steps gsap-stagger">
-              {processSteps.map((step, idx) => (
-                <div key={idx} className="process-step">
-                  <div className="step-num">{step.num}</div>
-                  <div className="step-icon"><i className={`fa ${step.icon}`}></i></div>
-                  <h5>{step.title}</h5>
-                  <p>{step.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* GALLERY */}
-        <section className="overlay-section">
-          <div className="container">
-            <div className="section-header gsap-reveal">
-              <span className="section-tag">Our Work</span>
-              <h2>Project Gallery</h2>
-              <div className="section-line" />
-            </div>
-            <div className="gallery-filters gsap-reveal">
-              {['all', 'residential', 'commercial', 'infrastructure', 'renovation'].map((f) => (
-                <button key={f} className={`filter-btn ${galleryFilter === f ? 'active' : ''}`} onClick={() => setGalleryFilter(f)}>
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
-                </button>
-              ))}
-            </div>
-            <div className="gallery-grid gsap-stagger">
-              {filteredGallery.map((item, idx) => (
-                <div key={idx} className="gallery-item-dark">
-                  <img src={`/images/${item.img}`} alt={item.title} />
-                  <div className="gallery-overlay">
-                    <div className="gallery-overlay-content">
-                      <span className="gallery-cat">{item.category}</span>
-                      <h5>{item.title}</h5>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* TESTIMONIALS */}
-        <section className="overlay-section">
-          <div className="container">
-            <div className="section-header gsap-reveal">
-              <span className="section-tag">Testimonials</span>
-              <h2>What Clients Say</h2>
-              <div className="section-line" />
-            </div>
-            <div className="testimonial-carousel">
-              {testimonials.map((t, idx) => (
-                <div key={idx} className={`testimonial-card ${idx === activeTestimonial ? 'active' : ''}`}>
-                  <div className="testimonial-quote"><i className="fa fa-quote-left"></i></div>
-                  <p>{t.text}</p>
-                  <div className="testimonial-author">
-                    <img src={`/images/${t.avatar}`} alt={t.name} />
-                    <div><h6>{t.name}</h6><span>{t.role}</span></div>
-                  </div>
-                  <div className="testimonial-stars">
-                    {[1, 2, 3, 4, 5].map((s) => <i key={s} className="fa fa-star"></i>)}
-                  </div>
-                </div>
-              ))}
-              <div className="testimonial-dots">
-                {testimonials.map((_, idx) => (
-                  <button key={idx} className={`dot ${idx === activeTestimonial ? 'active' : ''}`} onClick={() => setActiveTestimonial(idx)} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* CTA */}
         <section className="overlay-section cta-overlay-section">
           <div className="container cta-content gsap-reveal">
@@ -384,32 +263,6 @@ const Home: React.FC = () => {
             <div className="cta-buttons">
               <Link to="/contact" className="btn btn-primary">Get Free Quote</Link>
               <a href="tel:+61123456789" className="btn btn-outline"><i className="fa fa-phone"></i> +61 (123) 456 789</a>
-            </div>
-          </div>
-        </section>
-
-        {/* BLOG */}
-        <section className="overlay-section">
-          <div className="container">
-            <div className="section-header gsap-reveal">
-              <span className="section-tag">Latest News</span>
-              <h2>From Our Blog</h2>
-              <div className="section-line" />
-            </div>
-            <div className="blog-grid gsap-stagger">
-              {[
-                { img: 'b-img-1.jpg', title: 'We Provide 24 Hours Service', date: 'Mar 23, 2025' },
-                { img: 'b-img-2.jpg', title: 'Quality Construction Materials', date: 'Mar 15, 2025' },
-                { img: 'b-img-3.jpg', title: 'Modern Building Techniques', date: 'Mar 8, 2025' },
-              ].map((post, idx) => (
-                <div key={idx} className="blog-card-dark">
-                  <div className="blog-card-img"><img src={`/images/${post.img}`} alt={post.title} /></div>
-                  <div className="blog-card-content">
-                    <span><i className="fa fa-clock-o"></i> {post.date}</span>
-                    <Link to="/blog">{post.title}</Link>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
