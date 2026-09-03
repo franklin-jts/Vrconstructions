@@ -206,6 +206,18 @@ const Home: React.FC = () => {
           </div>
         </section>
 
+        {/* CTA — right below partners */}
+        <section className="overlay-section cta-overlay-section">
+          <div className="container cta-content gsap-reveal">
+            <h2>Ready to Build Your Dream?</h2>
+            <p>Let's turn your vision into reality. Contact us for a free consultation.</p>
+            <div className="cta-buttons">
+              <Link to="/contact" className="btn btn-primary">Get Free Quote</Link>
+              <a href="tel:+61123456789" className="btn btn-outline"><i className="fa fa-phone"></i> +61 (123) 456 789</a>
+            </div>
+          </div>
+        </section>
+
         {/* REQUEST FORM */}
         <section className="overlay-section">
           <div className="container">
@@ -269,18 +281,6 @@ const Home: React.FC = () => {
                   {formSubmitting ? 'Sending...' : 'Send Request'}
                 </button>
               </form>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="overlay-section cta-overlay-section">
-          <div className="container cta-content gsap-reveal">
-            <h2>Ready to Build Your Dream?</h2>
-            <p>Let's turn your vision into reality. Contact us for a free consultation.</p>
-            <div className="cta-buttons">
-              <Link to="/contact" className="btn btn-primary">Get Free Quote</Link>
-              <a href="tel:+61123456789" className="btn btn-outline"><i className="fa fa-phone"></i> +61 (123) 456 789</a>
             </div>
           </div>
         </section>
