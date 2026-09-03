@@ -4,7 +4,6 @@ import emailjs from '@emailjs/browser';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ConstructionScene from '../components/ConstructionScene';
-import CinematicShowcase from '../components/CinematicShowcase';
 import { EMAILJS_CONFIG } from '../config/email';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -164,9 +163,6 @@ const Home: React.FC = () => {
             </div>
           </div>
         </section>
-
-        {/* CINEMATIC SHOWCASE — animated service scenes */}
-        <CinematicShowcase />
 
         {/* SERVICES — showcase 4 key services with link to full page */}
         <section className="overlay-section">
