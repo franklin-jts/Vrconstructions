@@ -39,6 +39,17 @@ const App: React.FC = () => {
           <Footer />
         </div>
       </Router>
+
+      {/* WhatsApp Floating Button */}
+      <a
+        href="https://wa.me/61123456789?text=Hi%20VR%20Construction%2C%20I%27d%20like%20to%20inquire%20about%20your%20services."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="whatsapp-float"
+        aria-label="Chat on WhatsApp"
+      >
+        <i className="fa fa-whatsapp"></i>
+      </a>
     </>
   );
 };
