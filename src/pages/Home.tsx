@@ -55,6 +55,7 @@ const serviceOptions = services.map((s) => s.title);
 
 const Home: React.FC = () => {
   const [buildProgress, setBuildProgress] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
@@ -64,7 +65,8 @@ const Home: React.FC = () => {
 
   const pageRef = useRef<HTMLDivElement>(null);
 
-  // Scroll-driven building progress — covers ENTIRE page scroll
+  // Scroll-driven building progress
+  // Building constructs through first 60% of page scroll, then stays complete
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
@@ -72,8 +74,11 @@ const Home: React.FC = () => {
         requestAnimationFrame(() => {
           const scrollTop = window.scrollY;
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          const pct = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
-          setBuildProgress(pct);
+          // Map scroll to 0-1 over first 60% of page, then cap at 1
+          const rawPct = docHeight > 0 ? scrollTop / docHeight : 0;
+          const buildPct = Math.min(rawPct / 0.6, 1);
+          setBuildProgress(buildPct);
+          setScrollProgress(rawPct);
           ticking = false;
         });
         ticking = true;
@@ -144,7 +149,7 @@ const Home: React.FC = () => {
 
       {/* ===== SCROLL PROGRESS ===== */}
       <div className="scroll-progress-bar">
-        <div className="scroll-progress-fill" style={{ width: `${buildProgress * 100}%` }} />
+        <div className="scroll-progress-fill" style={{ width: `${scrollProgress * 100}%` }} />
       </div>
 
       {/* ===== ALL SECTIONS (scroll over the scene) ===== */}
