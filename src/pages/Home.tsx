@@ -188,6 +188,24 @@ const Home: React.FC = () => {
           </div>
         </section>
 
+        {/* PARTNERS — right below services */}
+        <section className="overlay-section">
+          <div className="container">
+            <div className="section-header gsap-reveal">
+              <span className="section-tag">Trusted By</span>
+              <h2>Our Partners</h2>
+              <div className="section-line" />
+            </div>
+            <div className="partners-grid gsap-stagger">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <div key={num} className="partner-item">
+                  <img src={`/images/parthner-img-${num}.png`} alt="Partner" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* REQUEST FORM */}
         <section className="overlay-section">
           <div className="container">
@@ -263,24 +281,6 @@ const Home: React.FC = () => {
             <div className="cta-buttons">
               <Link to="/contact" className="btn btn-primary">Get Free Quote</Link>
               <a href="tel:+61123456789" className="btn btn-outline"><i className="fa fa-phone"></i> +61 (123) 456 789</a>
-            </div>
-          </div>
-        </section>
-
-        {/* PARTNERS */}
-        <section className="overlay-section">
-          <div className="container">
-            <div className="section-header gsap-reveal">
-              <span className="section-tag">Trusted By</span>
-              <h2>Our Partners</h2>
-              <div className="section-line" />
-            </div>
-            <div className="partners-grid gsap-stagger">
-              {[1, 2, 3, 4, 5].map((num) => (
-                <div key={num} className="partner-item">
-                  <img src={`/images/parthner-img-${num}.png`} alt="Partner" />
-                </div>
-              ))}
             </div>
           </div>
         </section>
