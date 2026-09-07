@@ -9,10 +9,12 @@ import { EMAILJS_CONFIG } from '../config/email';
 gsap.registerPlugin(ScrollTrigger);
 
 const services = [
-  { id: 'construction', title: 'Construction', icon: 'fa-building', desc: 'Residential, commercial, and warehouse builds from foundation to finish.' },
-  { id: 'renovation', title: 'Renovation', icon: 'fa-refresh', desc: 'Complete home renovation and remodeling services.' },
-  { id: 'interior', title: 'Interior Work', icon: 'fa-home', desc: 'Kitchens, wardrobes, TV cabinets, wall paneling.' },
-  { id: 'painting', title: 'Painting', icon: 'fa-paint-brush', desc: 'Interior, exterior, texture, and waterproof coatings.' },
+  { id: 'residential', title: 'Residential Construction', icon: 'fa-home', desc: 'Building dream homes from foundation to finish with premium quality materials.', image: '/images/residential.jpg' },
+  { id: 'commercial', title: 'Commercial Construction', icon: 'fa-building', desc: 'Office buildings, retail spaces, and commercial complexes built to perfection.', image: '/images/commercial.jpg' },
+  { id: 'renovation', title: 'Renovation', icon: 'fa-refresh', desc: 'Complete home renovation and remodeling — transforming old spaces into new.', image: '/images/renovation.jpg' },
+  { id: 'interior', title: 'Interior Design', icon: 'fa-home', desc: 'Kitchens, wardrobes, TV cabinets, wall paneling — luxury interiors.', image: '/images/kitchen.jpg' },
+  { id: 'painting', title: 'Painting', icon: 'fa-paint-brush', desc: 'Interior, exterior, texture, and waterproof coatings for lasting finish.', image: '/images/painting.jpg' },
+  { id: 'electrical', title: 'Electrical Works', icon: 'fa-bolt', desc: 'Complete electrical wiring, fixtures, distribution boards, and smart systems.', image: '/images/electrical.jpg' },
 ];
 
 const allServiceNames = [
@@ -71,18 +73,18 @@ const Home: React.FC = () => {
         );
       });
 
-      // Zigzag service rows — one by one with icon first, then text
-      const zigzagContainer = document.getElementById('services-zigzag');
-      if (zigzagContainer) {
-        const rows = zigzagContainer.querySelectorAll('.service-zigzag-row');
+      // Metro service cards — one by one slide-in
+      const metroContainer = document.getElementById('metro-services');
+      if (metroContainer) {
+        const cards = metroContainer.querySelectorAll('.metro-service-card');
         ScrollTrigger.create({
-          trigger: zigzagContainer,
-          start: 'top 88%',
+          trigger: metroContainer,
+          start: 'top 85%',
           onEnter: () => {
-            rows.forEach((row, i) => {
+            cards.forEach((card, i) => {
               setTimeout(() => {
-                row.classList.add('visible');
-              }, i * 300);
+                card.classList.add('visible');
+              }, i * 200);
             });
           },
           once: true,
@@ -231,28 +233,32 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* SERVICES */}
+        {/* SERVICES — Metro Mane Style */}
         <section className="section-white">
           <div className="container">
-            <div className="section-header">
+            <div className="section-header gsap-reveal">
               <span className="section-tag">What We Do</span>
               <h2>Our Services</h2>
               <div className="section-line" />
             </div>
-            <div className="services-zigzag" id="services-zigzag">
-              {services.map((s, idx) => (
-                <div key={s.id} className={`service-zigzag-row ${idx % 2 !== 0 ? 'reverse' : ''}`}>
-                  <div className="service-zigzag-icon">
-                    <div className="service-card-icon"><i className={`fa ${s.icon}`}></i></div>
-                    <h5>{s.title}</h5>
-                  </div>
-                  <div className="service-zigzag-info">
-                    <p>{s.desc}</p>
-                    <Link to="/services" className="service-link">Learn More <i className="fa fa-arrow-right"></i></Link>
-                  </div>
+          </div>
+          <div className="metro-services" id="metro-services">
+            {services.map((s, idx) => (
+              <div key={s.id} className={`metro-service-card ${idx % 2 !== 0 ? 'metro-reverse' : ''}`}>
+                <div className="metro-service-image">
+                  <img src={s.image} alt={s.title} />
+                  <div className="metro-service-overlay" />
                 </div>
-              ))}
-            </div>
+                <div className="metro-service-content">
+                  <div className="metro-service-num">0{idx + 1}</div>
+                  <h3>{s.title}</h3>
+                  <p>{s.desc}</p>
+                  <Link to="/services" className="service-link">Learn More <i className="fa fa-arrow-right"></i></Link>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="container">
             <div className="gsap-reveal" style={{ textAlign: 'center', marginTop: '50px' }}>
               <Link to="/services" className="btn btn-primary">View All 11 Services</Link>
             </div>

@@ -4,17 +4,6 @@ import { Link } from 'react-router-dom';
 const Footer: React.FC = () => {
   return (
     <footer>
-      {/* Footer Video */}
-      <div className="footer-video-wrap">
-        <video autoPlay muted loop playsInline className="footer-video">
-          <source src="/videos/footer-video.mp4" type="video/mp4" />
-        </video>
-        <div className="footer-video-overlay" />
-        <div className="footer-video-content">
-          <h3>Building Dreams Into Reality</h3>
-          <p>Watch our team in action — precision, quality, and dedication.</p>
-        </div>
-      </div>
       <div className="container">
         <ul className="row">
           <li className="col-sm-3">
