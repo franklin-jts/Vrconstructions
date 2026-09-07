@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { EMAILJS_CONFIG } from '../config/email';
 
+
 gsap.registerPlugin(ScrollTrigger);
 
 const services = [
@@ -35,7 +36,7 @@ const Home: React.FC = () => {
 
   const pageRef = useRef<HTMLDivElement>(null);
 
-  // Scroll progress
+  // Scroll progress + building progress
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
@@ -45,6 +46,7 @@ const Home: React.FC = () => {
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
           const rawPct = docHeight > 0 ? scrollTop / docHeight : 0;
           setScrollProgress(rawPct);
+
           ticking = false;
         });
         ticking = true;
@@ -54,30 +56,96 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // GSAP section reveals
+  // GSAP section reveals + animations
   useEffect(() => {
     if (!pageRef.current) return;
-    const reveals = pageRef.current.querySelectorAll('.gsap-reveal');
-    reveals.forEach((el) => {
-      gsap.fromTo(el,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-        }
-      );
-    });
-    const staggerGroups = pageRef.current.querySelectorAll('.gsap-stagger');
-    staggerGroups.forEach((group) => {
-      gsap.fromTo(group.children,
-        { opacity: 0, y: 30, scale: 0.96 },
-        {
-          opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.08, ease: 'power2.out',
-          scrollTrigger: { trigger: group, start: 'top 82%', toggleActions: 'play none none none' },
-        }
-      );
-    });
-    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
+    const ctx = gsap.context(() => {
+      // Reveal animations — sections fade in from bottom
+      pageRef.current!.querySelectorAll('.gsap-reveal').forEach((el) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1, y: 0, duration: 0.4, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 92%', toggleActions: 'play none none none' },
+          }
+        );
+      });
+
+      // Zigzag service rows — one by one with icon first, then text
+      const zigzagContainer = document.getElementById('services-zigzag');
+      if (zigzagContainer) {
+        const rows = zigzagContainer.querySelectorAll('.service-zigzag-row');
+        ScrollTrigger.create({
+          trigger: zigzagContainer,
+          start: 'top 88%',
+          onEnter: () => {
+            rows.forEach((row, i) => {
+              setTimeout(() => {
+                row.classList.add('visible');
+              }, i * 300);
+            });
+          },
+          once: true,
+        });
+      }
+
+      // Stagger animations — CSS-driven slide-in with delays
+      pageRef.current!.querySelectorAll('.gsap-stagger').forEach((group) => {
+        ScrollTrigger.create({
+          trigger: group,
+          start: 'top 90%',
+          onEnter: () => {
+            Array.from(group.children).forEach((child, i) => {
+              setTimeout(() => {
+                child.classList.add('gsap-animated');
+              }, i * 100);
+            });
+          },
+          once: true,
+        });
+      });
+
+      // Stats counter animation — numbers count up
+      pageRef.current!.querySelectorAll('.stat-number').forEach((el) => {
+        const target = parseInt(el.getAttribute('data-target') || '0');
+        const suffix = el.getAttribute('data-suffix') || '';
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: target, duration: 0.8, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none none' },
+          onUpdate: () => { el.textContent = Math.round(obj.val) + suffix; },
+        });
+      });
+
+      // Contact cards — staggered slide-in from left
+      pageRef.current!.querySelectorAll('.contact-cards-row').forEach((row) => {
+        ScrollTrigger.create({
+          trigger: row,
+          start: 'top 90%',
+          onEnter: () => {
+            Array.from(row.children).forEach((child, i) => {
+              setTimeout(() => {
+                child.classList.add('gsap-animated');
+              }, i * 120);
+            });
+          },
+          once: true,
+        });
+      });
+
+      // CTA section — scale up reveal
+      pageRef.current!.querySelectorAll('.cta-section').forEach((el) => {
+        gsap.fromTo(el,
+          { opacity: 0, scale: 0.98 },
+          {
+            opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none none' },
+          }
+        );
+      });
+    }, pageRef);
+
+    return () => ctx.revert();
   }, []);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -155,7 +223,7 @@ const Home: React.FC = () => {
               {counters.map((c, idx) => (
                 <div key={idx} className="stat-item">
                   <div className="stat-icon"><i className={`fa ${c.icon}`}></i></div>
-                  <div className="stat-number">{c.count}{c.suffix}</div>
+                  <div className="stat-number" data-target={c.count} data-suffix={c.suffix}>0{c.suffix}</div>
                   <div className="stat-label">{c.label}</div>
                 </div>
               ))}
@@ -166,18 +234,22 @@ const Home: React.FC = () => {
         {/* SERVICES */}
         <section className="section-white">
           <div className="container">
-            <div className="section-header gsap-reveal">
+            <div className="section-header">
               <span className="section-tag">What We Do</span>
               <h2>Our Services</h2>
               <div className="section-line" />
             </div>
-            <div className="services-grid gsap-stagger">
-              {services.map((s) => (
-                <div key={s.id} className="service-card-dark">
-                  <div className="service-card-icon"><i className={`fa ${s.icon}`}></i></div>
-                  <h5>{s.title}</h5>
-                  <p>{s.desc}</p>
-                  <Link to="/services" className="service-link">Learn More <i className="fa fa-arrow-right"></i></Link>
+            <div className="services-zigzag" id="services-zigzag">
+              {services.map((s, idx) => (
+                <div key={s.id} className={`service-zigzag-row ${idx % 2 !== 0 ? 'reverse' : ''}`}>
+                  <div className="service-zigzag-icon">
+                    <div className="service-card-icon"><i className={`fa ${s.icon}`}></i></div>
+                    <h5>{s.title}</h5>
+                  </div>
+                  <div className="service-zigzag-info">
+                    <p>{s.desc}</p>
+                    <Link to="/services" className="service-link">Learn More <i className="fa fa-arrow-right"></i></Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -283,6 +355,8 @@ const Home: React.FC = () => {
             </div>
           </div>
         </section>
+
+
 
       </div>
     </>

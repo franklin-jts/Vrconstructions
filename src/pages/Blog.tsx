@@ -31,17 +31,18 @@ const Blog: React.FC = () => {
 
   useEffect(() => {
     if (!pageRef.current) return;
-    const reveals = pageRef.current.querySelectorAll('.gsap-reveal');
-    reveals.forEach((el) => {
-      gsap.fromTo(el,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-        }
-      );
-    });
-    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
+    const ctx = gsap.context(() => {
+      pageRef.current!.querySelectorAll('.gsap-reveal').forEach((el) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1, y: 0, duration: 0.35, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 92%', toggleActions: 'play none none none' },
+          }
+        );
+      });
+    }, pageRef);
+    return () => ctx.revert();
   }, []);
 
   return (

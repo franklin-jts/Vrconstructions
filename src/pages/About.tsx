@@ -11,27 +11,32 @@ const About: React.FC = () => {
 
   useEffect(() => {
     if (!pageRef.current) return;
-    const reveals = pageRef.current.querySelectorAll('.gsap-reveal');
-    reveals.forEach((el) => {
-      gsap.fromTo(el,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-        }
-      );
-    });
-    const staggerGroups = pageRef.current.querySelectorAll('.gsap-stagger');
-    staggerGroups.forEach((group) => {
-      gsap.fromTo(group.children,
-        { opacity: 0, y: 30, scale: 0.96 },
-        {
-          opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'power2.out',
-          scrollTrigger: { trigger: group, start: 'top 82%', toggleActions: 'play none none none' },
-        }
-      );
-    });
-    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
+    const ctx = gsap.context(() => {
+      pageRef.current!.querySelectorAll('.gsap-reveal').forEach((el) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1, y: 0, duration: 0.4, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 92%', toggleActions: 'play none none none' },
+          }
+        );
+      });
+      pageRef.current!.querySelectorAll('.gsap-stagger').forEach((group) => {
+        ScrollTrigger.create({
+          trigger: group,
+          start: 'top 90%',
+          onEnter: () => {
+            Array.from(group.children).forEach((child, i) => {
+              setTimeout(() => {
+                child.classList.add('gsap-animated');
+              }, i * 100);
+            });
+          },
+          once: true,
+        });
+      });
+    }, pageRef);
+    return () => ctx.revert();
   }, []);
 
   const stats = [
